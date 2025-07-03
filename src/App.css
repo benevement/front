@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 #root {
+  /* display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center; */
   padding: 2rem;
   --blueButton: #01325C;
   --outlineBorder: #CB8B4E;

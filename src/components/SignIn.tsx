@@ -17,6 +17,7 @@ export default function SignIn(){
       try {
         console.log(data)
       } catch (error) {
+        
         console.log("erreur", error)
       }
     }
