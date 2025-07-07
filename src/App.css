@@ -23,3 +23,7 @@
   border-radius: 8px;
   text-align: center;
 }
+
+.paddingButton2 {
+  padding: 0.7em 1.3em;
+}

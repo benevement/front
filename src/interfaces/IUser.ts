@@ -1,3 +1,5 @@
+import { AddressInterface } from "./IAddress";
+
 export type roleType =  "admin" | "volunteer" | "connected_user" | "visitor"; 
 
 export interface UserSignInInterface {
@@ -17,7 +19,10 @@ export default interface UserInterface extends UserSignInInterface, UserSignupIn
     role: roleType;
 }
 
+export interface UserAddressInterface extends UserInterface, AddressInterface {
+    // réunion des interfaces AddressInterface et UserInterface (pour utilisation dans écran UserProfile)
 
+}
 
 
 /*
