@@ -3,7 +3,7 @@ import './App.css'
 import Homepage from './components/Homepage'
 import SignIn from './components/SignIn'
 import Navbar from './components/Navbar'
-import UserProfile from './components/connectedUser/UserProfile'
+import SignUp from './components/SignUp'
 
 function App() {
 
@@ -15,8 +15,8 @@ function App() {
         <Routes>
           <Route path='/' element={<Homepage />} />
           <Route path='/signin' element={<SignIn />} />
+          <Route path='/signup' element={<SignUp />} />
           <Route path='/navbar' element={<Navbar />} />
-          <Route path='/users/1' element={<UserProfile />} />
 
         </Routes>
       </BrowserRouter>
