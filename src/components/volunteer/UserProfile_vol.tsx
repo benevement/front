@@ -1,5 +1,6 @@
-// 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
-// 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
+// 08/07/25 : création fichier à partir du UserProfile de ConnectedUser
+// npm install zustand
+// 
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
@@ -8,11 +9,11 @@ import { useEffect, useState } from "react";
 import fakeUsers from "../../data/fakeUsers";
 import { useLocation } from "react-router-dom";
 import axios  from "axios";
-//import { AddressInterface } from "../../interfaces/IAddress";
 
-const UserProfile = (user: UserInterface) => {
-  const location = useLocation();
-  const id = 79; // en dur
+
+const UserProfile_vol = (user: UserInterface) => {
+  const location = useLocation(); // permet d'avoir le chemin courant (route), par exemple
+  const id = 2; // en dur
   const userThis: UserInterface = fakeUsers[id];
 
   const {
@@ -411,4 +412,4 @@ const UserProfile = (user: UserInterface) => {
   );
 };
 
-export default UserProfile;
+export default UserProfile_vol;
