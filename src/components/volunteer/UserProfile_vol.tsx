@@ -79,6 +79,7 @@ const UserProfile_vol = (user: UserInterface) => {
       }
       console.log(`photoView :  ${urlPhotoView}`);
     };
+    imageLoad();
   }, []);
 
   //console.log("location : ",location.pathname)

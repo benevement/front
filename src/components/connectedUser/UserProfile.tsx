@@ -10,9 +10,10 @@ import { useLocation } from "react-router-dom";
 import axios  from "axios";
 //import { AddressInterface } from "../../interfaces/IAddress";
 
-const UserProfile = (user: UserInterface) => {
+//const UserProfile = (user: UserInterface) => {
+const UserProfile = () => {
   const location = useLocation();
-  const id = 79; // en dur
+  const id = 89; // en dur
   const userThis: UserInterface = fakeUsers[id];
 
   const {
@@ -52,6 +53,7 @@ const UserProfile = (user: UserInterface) => {
 
   function loadImageProfile(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
+    console.log("photoUrl : ", photoUrl);
     return photoUrl;
   }
   const [urlPhotoView, setUrlPhotoView] = useState<string>(
@@ -65,7 +67,7 @@ const UserProfile = (user: UserInterface) => {
         const response = await axios.head(photo); // axios.head pour recup header
         const contentLength = response.headers["content-length"];
 
-        if (contentLength) {
+        if (contentLength) { // autrement dit, si on a pu récupéré l'image
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
@@ -74,10 +76,11 @@ const UserProfile = (user: UserInterface) => {
         setUrlPhotoView(photo);
         console.log("photo : ", photo);
       } catch (error) {
-        console.log("erreur dans l'adresse de l'image");
+        console.log("erreur dans l'adresse de l'image : ", error);
       }
       console.log(`photoView :  ${urlPhotoView}`);
     };
+    imageLoad();
   }, []);
 
   //console.log("location : ",location.pathname)
