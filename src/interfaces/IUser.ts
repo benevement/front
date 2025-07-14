@@ -7,7 +7,7 @@ export interface UserSignInInterface {
     password: string;
 }
 export interface UserSignupInterface extends UserSignInInterface{
-    cPassword?: string;
+    confirmPassword?: string;
     phone_number?: string;
 }
 export default interface UserInterface extends UserSignInInterface, UserSignupInterface {

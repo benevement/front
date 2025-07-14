@@ -2,13 +2,17 @@ import { useForm } from "react-hook-form";
 import { register as registerUser } from "../services/api/auth";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { UserSignupInterface } from "../interfaces/IUser";
 
+// commenté suite import UserSignupInterface
+/*
 type FormValues = {
   email: string;
   phone_number: string;
   password: string;
   confirmPassword: string;
 };
+*/
 
 export default function SignUp() {
   const {
@@ -16,12 +20,12 @@ export default function SignUp() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<UserSignupInterface>();
 
   const navigate = useNavigate();
   const password = watch("password") || "";
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: UserSignupInterface) => {
     try {
       await registerUser({
         email: data.email,

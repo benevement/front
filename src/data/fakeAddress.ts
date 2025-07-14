@@ -14,5 +14,5 @@ export const fakeAddress: AddressInterface[] = [
     street_number: "5",
     street_name: "rue Jean Machin",
     city: "Angers",
-  },
+  }, 
 ];

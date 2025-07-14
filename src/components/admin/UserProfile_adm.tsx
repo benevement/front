@@ -1,20 +1,35 @@
-// 08/07/25 : création fichier à partir du UserProfile de ConnectedUser
-// npm install zustand
-// 
+// 14/07 : copie à partir de UserProfile.tsx
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
-//import { number, unknown } from "zod/v4";
-import { useEffect, useState } from "react";
-import fakeUsers from "../../data/fakeUsers";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios  from "axios";
+import UserProvider, { UserContext } from "../../context/UserProvider";
+import { fakeAddress } from "../../data/fakeAddress";
+//import { AddressInterface } from "../../interfaces/IAddress";
 
+//const UserProfile = (user: UserInterface) => {
+const UserProfile = () => {
 
-const UserProfile_adm = (user: UserInterface) => {
-  const location = useLocation(); // permet d'avoir le chemin courant (route), par exemple
-  const id = 2; // en dur
-  const userThis: UserInterface = fakeUsers[id];
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("UserProfile must be used within a UserProvider");
+  }
+  const { providerUser, isConnectedUser, isVolunteer, isAdmin, defineUser } = context;
+  console.log("providerUser : ", providerUser);
+  console.log("isConnectedUser : ", isConnectedUser);
+  console.log("isVolunteer : ", isVolunteer);
+  console.log("isAdmin : ", isAdmin);
+  console.log("context : ", context);
+
+  // attribution d'une adresse en dur => devra être retournée + tard par une reqûete SQL join
+  //  pour avoir l'adresse correspondant au user
+  const userAddress = fakeAddress.find((item) => (item.id = 2));
+
+  const location = useLocation();
+  //const id = 89; // en dur
+  //const userThis: UserInterface = fakeUsers[id];
 
   const {
     register,
@@ -31,7 +46,7 @@ const UserProfile_adm = (user: UserInterface) => {
       avatar: "",
       role: "connected_user",
       phone_number: "",
-      cPassword: "",
+      confirmPassword: "",
       zip_code: "",
       street_number: "",
       street_name: "",
@@ -53,6 +68,7 @@ const UserProfile_adm = (user: UserInterface) => {
 
   function loadImageProfile(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
+    console.log("photoUrl : ", photoUrl);
     return photoUrl;
   }
   const [urlPhotoView, setUrlPhotoView] = useState<string>(
@@ -60,13 +76,14 @@ const UserProfile_adm = (user: UserInterface) => {
   );
 
   useEffect(() => {
-    const photo = loadImageProfile(id);
+    const photo = loadImageProfile(providerUser.id);
+    //const photo = loadImageProfile(89);
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
         const contentLength = response.headers["content-length"];
 
-        if (contentLength) {
+        if (contentLength) { // autrement dit, si on a pu récupéré l'image
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
@@ -75,10 +92,11 @@ const UserProfile_adm = (user: UserInterface) => {
         setUrlPhotoView(photo);
         console.log("photo : ", photo);
       } catch (error) {
-        console.log("erreur dans l'adresse de l'image");
+        console.log("erreur dans l'adresse de l'image : ", error);
       }
       console.log(`photoView :  ${urlPhotoView}`);
     };
+    imageLoad();
   }, []);
 
   //console.log("location : ",location.pathname)
@@ -86,12 +104,6 @@ const UserProfile_adm = (user: UserInterface) => {
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-2 border-blue-500">
-        {/* <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-              <h2 className="mt-10 text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                Connexion
-              </h2>
-            </div> */}
-
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-2 border-amber-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <section id="sectionTop" className="h-1/3 grid sm:grid-cols-5">
@@ -114,7 +126,7 @@ const UserProfile_adm = (user: UserInterface) => {
                     id="last_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder=" Nom"
+                    placeholder = {providerUser.last_name || " Nom"} 
                     {...register("last_name", {
                       required: "Le nom est obligatoire.",
                     })}
@@ -141,7 +153,7 @@ const UserProfile_adm = (user: UserInterface) => {
                     id="first_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder=" Prénom"
+                    placeholder={providerUser.first_name || " Prénom"}
                     {...register("first_name", { required: "Champ requis." })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
@@ -165,8 +177,8 @@ const UserProfile_adm = (user: UserInterface) => {
                   <input
                     id="birthdate"
                     type="date"
-                    // autoComplete="email"
-                    placeholder=" Date de naissance"
+                    
+                    placeholder={providerUser.birthdate || " Date de naissance" }
                     {...register("birthdate", {
                       valueAsDate: true,
                       required: false,
@@ -223,7 +235,7 @@ const UserProfile_adm = (user: UserInterface) => {
                     id="streetnum"
                     type="text"
                     // autoComplete=""
-                    placeholder=" N° voie"
+                    placeholder={userAddress?.street_number || " N° de voie" }
                     {...register("street_number", {
                       //required: "Le nom est obligatoire.",
                     })}
@@ -254,7 +266,7 @@ const UserProfile_adm = (user: UserInterface) => {
                     id="address"
                     type="text"
                     // autoComplete=""
-                    placeholder=" Nom de la rue/voie/Lieu-dit,..."
+                    placeholder={userAddress?.street_name || " Nom de la rue/voie/Lieu-dit,..."}
                     {...register("street_name", {
                       //required: "Le nom est obligatoire.",
                     })}
@@ -285,7 +297,7 @@ const UserProfile_adm = (user: UserInterface) => {
                     id="zipcode"
                     type="text"
                     // autoComplete=""
-                    placeholder=" CP"
+                    placeholder={userAddress?.zip_code || " CP"}
                     {...register("zip_code", {
                       //required: "Le nom est obligatoire.",
                     })}
@@ -315,7 +327,7 @@ const UserProfile_adm = (user: UserInterface) => {
                   <input
                     id="city"
                     type="text"
-                    placeholder=" Commune de résidence"
+                    placeholder={userAddress?.city || " Commune de résidence"}
                     {...register("city", {
                       //required: "Le nom est obligatoire.",
                     })}
@@ -350,7 +362,7 @@ const UserProfile_adm = (user: UserInterface) => {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      placeholder=" Email"
+                      placeholder={providerUser.email || " Email"}
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}
@@ -412,4 +424,4 @@ const UserProfile_adm = (user: UserInterface) => {
   );
 };
 
-export default UserProfile_adm;
+export default UserProfile;

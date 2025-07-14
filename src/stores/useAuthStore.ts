@@ -1,7 +1,9 @@
 import { create } from 'zustand';
+import { roleType } from '../interfaces/IUser';
 
 interface AuthState {
-  user: { email: string; role: string } | null;
+  //user: { email: string; role: string } | null;
+  user: { email: string; role: roleType } | null;
   token: string | null;
   setAuth: (user: AuthState['user'], token: string) => void;
   logout: () => void;
