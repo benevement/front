@@ -4,33 +4,41 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
 import { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import axios  from "axios";
-import UserProvider, { UserContext } from "../../context/UserProvider";
+//import UserProvider, { UserContext } from "../../context/UserProvider"; // commenté 23/07/25
 import { fakeAddress } from "../../data/fakeAddress";
 //import { AddressInterface } from "../../interfaces/IAddress";
 
 //const UserProfile = (user: UserInterface) => {
 const UserProfile = () => {
 
+  /* commenté 23/07/25
   const context = useContext(UserContext);
   if (!context) {
     throw new Error("UserProfile must be used within a UserProvider");
   }
+  
   const { providerUser, isConnectedUser, isVolunteer, isAdmin, defineUser } = context;
   console.log("providerUser : ", providerUser);
   console.log("isConnectedUser : ", isConnectedUser);
   console.log("isVolunteer : ", isVolunteer);
   console.log("isAdmin : ", isAdmin);
   console.log("context : ", context);
-
+*/
   // attribution d'une adresse en dur => devra être retournée + tard par une reqûete SQL join
   //  pour avoir l'adresse correspondant au user
   const userAddress = fakeAddress.find((item) => (item.id = 2));
 
-  const location = useLocation();
+  
   //const id = 89; // en dur
   //const userThis: UserInterface = fakeUsers[id];
+
+  const providerUser = { // ajouté le 23/07/25 pour test en dur sans contexte.
+    last_name : "lname",
+    first_name: "fname",
+    birthdate: "2001-05-07",
+    email: "ab@df.fr"
+  }
 
   const {
     register,
@@ -77,8 +85,8 @@ const UserProfile = () => {
   );
 
   useEffect(() => {
-    const photo = loadImageProfile(providerUser.id);
-    //const photo = loadImageProfile(89);
+    //const photo = loadImageProfile(providerUser.id); // commenté 23/07/25
+    const photo = loadImageProfile(89);
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
@@ -100,7 +108,10 @@ const UserProfile = () => {
     imageLoad();
   }, []);
 
-  //console.log("location : ",location.pathname)
+  // Personnalisation des boutons supplémentaires pour le bénévole :
+  //const varcol = isVolunteer ? 3 : 5; //commenté 23/07/25
+
+
 
   return (
     <>
@@ -195,7 +206,7 @@ const UserProfile = () => {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col col-span-2 justify-around items-center">
+              <div className="flex flex-col col-span-2 justify-around items-center border-2 border-pink-500">
                 <img
                   className="w-3/5 mt-3"
                   src={urlPhotoView}
@@ -346,19 +357,21 @@ const UserProfile = () => {
               </div>
             </section>
             {/* ********************************************* SECTION *********************/}
+            {/* adaptation pour écran du bénévole */}
+            
             <section
               id="sectionBottom"
               className="h-1/3 grid grid-cols-5"
             >
-              <div className="col-span-3">
-                <div>
+              <div className="grid-cols-3 col-span-3 border-2 border-pink-900">
+                <div className="border-2 border-green-200 col-span-3">
                   <label
                     htmlFor="email"
                     className="block text-sm font-medium leading-4 text-gray-900"
                   >
                     Adresse Email
                   </label>
-                  <div className="mt-1 mb-2">
+                  <div className="mt-1 mb-2 border-2 border-green-500">
                     <input
                       id="email"
                       type="email"
@@ -377,6 +390,7 @@ const UserProfile = () => {
                       </p>
                     )}
                   </div>
+                 
                 </div>
 
                 {/* Password */}
@@ -407,14 +421,31 @@ const UserProfile = () => {
                         {errors.password.message}
                       </p>
                     )}
+
+
+
                   </div>
+                  
+                </div>
+                
+                {/* Submit */}
+                       
+
+              </div>
+             
+              <div className="grid-cols-3 col-span-2 row-span-4 bg-amber-200">
+                  <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3">
+                    METTRE A JOUR 2
+                   </button>
+                    test
                 </div>
 
-                {/* Submit */}
-              </div>
             </section>
-            <div className="grid grid-col-5 col-span-5 text-sm justify-center items-center">
-              <button type="submit" className="custom-button paddingButton2">
+            <div className="grid grid-col-3 text-sm justify-around items-center">
+              <button type="button" className="custom-button paddingButton2 col-start-1 col-end-2">
+                Modifier Mot de passe
+              </button>
+              <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3">
                 METTRE A JOUR
               </button>
             </div>
@@ -426,3 +457,12 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
+
+
+
+
+
+                  
+
+

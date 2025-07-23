@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
 import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import axios  from "axios";
+import axios from "axios";
 import UserProvider, { UserContext } from "../../context/UserProvider";
 import { fakeAddress } from "../../data/fakeAddress";
 //import { AddressInterface } from "../../interfaces/IAddress";
@@ -126,7 +126,7 @@ const UserProfile = () => {
                     id="last_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder = {providerUser.last_name || " Nom"} 
+                    placeholder={providerUser.last_name || " Nom"}
                     {...register("last_name", {
                       required: "Le nom est obligatoire.",
                     })}
@@ -177,8 +177,8 @@ const UserProfile = () => {
                   <input
                     id="birthdate"
                     type="date"
-                    
-                    placeholder={providerUser.birthdate || " Date de naissance" }
+
+                    placeholder={providerUser.birthdate || " Date de naissance"}
                     {...register("birthdate", {
                       valueAsDate: true,
                       required: false,
@@ -235,7 +235,7 @@ const UserProfile = () => {
                     id="streetnum"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.street_number || " N° de voie" }
+                    placeholder={userAddress?.street_number || " N° de voie"}
                     {...register("street_number", {
                       //required: "Le nom est obligatoire.",
                     })}
