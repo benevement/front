@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import './App.css'
 import Homepage from './components/Homepage'
 import SignIn from './components/SignIn'
 import Navbar from './components/Navbar'
 import SignUp from './components/SignUp'
+import CreateEventForm from './components/Events/CreateEvent'
 
 function App() {
 
@@ -17,6 +17,7 @@ function App() {
           <Route path='/signin' element={<SignIn />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/navbar' element={<Navbar />} />
+          <Route path='/events/create' element={<CreateEventForm/>} />
 
         </Routes>
       </BrowserRouter>
