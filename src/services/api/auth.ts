@@ -1,6 +1,7 @@
 import api from '../api';
 import { useAuthStore } from '../../stores/useAuthStore';
-import { UserSignInInterface, UserSignupInterface, roleType } from '../../interfaces/IUser';
+import {UserSignInInterface, UserSignupInterface, roleType } from '../../interfaces/IUser';
+import { setUncaughtExceptionCaptureCallback } from 'process';
 
 
 // commenté suite import UserSignInInterface, UserSignupInterface 
@@ -18,6 +19,7 @@ type RegisterInput = {
 };
 */
 
+
 type AuthResponse = {
   access_token: string;
   user: {
@@ -26,6 +28,7 @@ type AuthResponse = {
     role: roleType; // MDA : changement string => roleType
   };
 };
+
 
 export const login = async (input: UserSignInInterface): Promise<void> => {
   const response = await api.post<AuthResponse>('/auth/login', input);
@@ -46,3 +49,13 @@ export const register = async (input: UserSignupInterface): Promise<void> => {
 
   localStorage.setItem('token', access_token);
 };
+
+// 15/08/25
+
+export async function getAxiosUser(){
+  const baseURL = "http://192.168.1.134:5000";
+  const url = baseURL+"/api/user";
+const response = await api.get(url);
+if (!response) throw new Error("erreur function getAxioUser");
+return response.data
+}

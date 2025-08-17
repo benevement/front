@@ -24,6 +24,13 @@ export interface UserAddressInterface extends UserInterface, AddressInterface {
 
 }
 
+export interface IAuthState {
+    user: { email: string; role: roleType } | null;
+    //user : Pick<UserInterface, "email"|"role"> | null     // autre écriture possible
+    token: string | null;
+    setAuth: (user: IAuthState['user'], token: string) => void;
+    logout: () => void;
+  }
 
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

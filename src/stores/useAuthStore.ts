@@ -1,15 +1,10 @@
 import { create } from 'zustand';
-import { roleType } from '../interfaces/IUser';
+import { IAuthState, roleType } from '../interfaces/IUser';
 
-interface AuthState {
-  //user: { email: string; role: string } | null;
-  user: { email: string; role: roleType } | null;
-  token: string | null;
-  setAuth: (user: AuthState['user'], token: string) => void;
-  logout: () => void;
-}
+// 12/08 : déplacement interface "AuthState" vers interfaces/IUsers.ts
+// interface renommée IAuthState
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<IAuthState>((set) => ({
   user: null,
   token: localStorage.getItem('token'),
   setAuth: (user, token) => {

@@ -12,7 +12,7 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 2em; 
 }
 
 .custom-button {
@@ -23,7 +23,26 @@
   border-radius: 8px;
   text-align: center;
 }
+.custom-button:hover{
+  background-color: #01528c;
+}
 
 .paddingButton2 {
-  padding: 0.7em 1.3em;
+  padding: 0.4em 1em;
+  margin-top: 0.4em; 
+  /* margin-bottom: 3px; */
+  width: 100%;
 }
+
+input {
+  padding-left: 5px;
+}
+
+/*
+theme: {
+  colors: {
+    'chocolate': '#D2691E'
+  },
+  extend : {}
+},
+*/

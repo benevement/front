@@ -6,18 +6,20 @@
 // Bouton User Skills
 // Bouton Avaibility
 
-export const VolunteerButtons = () => {
+export const VolunteerSection = () => {
 
     
     return (
         <>
-            <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3 bg-cyan-600">
-                Compétences
-            </button>
+            <div className="grid grid-cols-2 text-sm justify-around items-center space-x-2">
+                <button type="button" className="custom-button col-start-1 col-end-2">
+                  Compétences
+                </button>
+                <button type="submit" className="custom-button col-start-2 col-end-3">
+                  Disponibilités
+                </button>
+              </div>
         </>
     )
 }
 
-
-
-//
