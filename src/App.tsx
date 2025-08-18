@@ -5,7 +5,8 @@ import SignIn from './components/SignIn'
 import Navbar from './components/Navbar'
 import SignUp from './components/SignUp'
 import UserProfile from './components/connectedUser/UserProfile'
-import FakeUserComp from './components/common/FakeUserComp'
+import VolunteerTask from './components/volunteer/VolunteerTask'
+// import FakeUserComp from './components/common/FakeUserComp'
 
 
 function App() {
@@ -17,7 +18,8 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/navbar' element={<Navbar />} />
         <Route path='/users/:id' element={<UserProfile />} />
-        <Route path='/users/fake/' element={<FakeUserComp />} />
+        <Route path='/events/:event_id/tasks' element={<VolunteerTask />} />
+        {/* <Route path='/users/fake/' element={<FakeUserComp />} /> */}
       </Routes>
   )
 }

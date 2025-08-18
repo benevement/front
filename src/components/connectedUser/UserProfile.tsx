@@ -2,7 +2,7 @@
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
+import { UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { fakeAddress } from "../../data/fakeAddress";
@@ -11,23 +11,6 @@ import { VolunteerSection } from "../volunteer/UserProfile_vol";
 
 
 const UserProfile = () => {
-
-
-const [recupTitle, setRecupTitle] = useState<string>("");
-/* getting posts of user with id 5 */
-fetch('https://dummyjson.com/users/5/posts')
-
-.then( (res) =>  res.json())
-.then ( (data) => {
-  const jres = data.posts[0].title
-  setRecupTitle(jres)
-}
-//console.log(jres)
-);
-useEffect(() => {
-  console.log("recupTitle à jour :", recupTitle);
-},[recupTitle]);
-
 
 
   // variables d'authentifications tirées du store
