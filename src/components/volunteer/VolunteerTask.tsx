@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
 
 const VolunteerTask = () => {
@@ -11,6 +12,9 @@ const VolunteerTask = () => {
 
     const isVolunteer = role && role == "volunteer" ? true : false;
 
+    // récupération des paramètres de l'URL :
+    const {event_id} = useParams();
+    
 
     return (
         <>

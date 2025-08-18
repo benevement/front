@@ -8,6 +8,8 @@ import axios from "axios";
 import { fakeAddress } from "../../data/fakeAddress";
 import { useAuthStore } from "../../stores/useAuthStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
+import fakeUsers from "../../data/fakeUsers";
+import { useParams } from "react-router-dom";
 
 
 const UserProfile = () => {
@@ -18,21 +20,17 @@ const UserProfile = () => {
   // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
-  const isVolunteer = role && role=="volunteer" ? true : false;
+  const isVolunteer = role && role == "volunteer" ? true : false;
 
-  // attribution d'une adresse en dur => devra être retournée + tard par une requête SQL join
-  //  pour avoir l'adresse correspondant au user
-  const userAddress = fakeAddress.find((item) => (item.id = 2));
-
-  //const id = 89; // en dur
   //const userThis: UserInterface = fakeUsers[id];
 
-  const providerUser = { // ajouté le 23/07/25 pour test en dur sans contexte.
-    last_name: "lname",
-    first_name: "fname",
-    birthdate: "2001-05-07",
-    email: "ab@df.fr"
-  }
+  const { id } = useParams();
+  const profileId = id ? Number(id) : 0;
+  const fakeUser = fakeUsers.find((u) => (u.id === profileId));
+  // attribution d'une adresse fake => devra être retournée + tard par une requête SQL join
+  //  pour avoir l'adresse correspondant au user
+  const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
+
 
   const {
     register,
@@ -69,7 +67,8 @@ const UserProfile = () => {
     // traitement
   };
 
-  function loadImageProfile(id: number): string {
+  function imageProfileUrl(id: number): string {
+
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
     console.log("photoUrl : ", photoUrl);
     return photoUrl;
@@ -79,8 +78,9 @@ const UserProfile = () => {
   );
 
   useEffect(() => {
-    //const photo = loadImageProfile(providerUser.id); // commenté 23/07/25
-    const photo = loadImageProfile(89);
+    let photo = imageProfileUrl(fakeUser?.id || 0);
+    console.log("fakeUser.id : ", fakeUser?.id);
+
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
@@ -91,6 +91,7 @@ const UserProfile = () => {
           console.log(`Taille de l'image : ${size} octets`);
         } else {
           console.log(`En-tête content-length non trouvée`);
+          photo = "/images/UserProfile/colomb-82.png";
         }
         setUrlPhotoView(photo);
         console.log("photo : ", photo);
@@ -132,7 +133,7 @@ const UserProfile = () => {
                     id="last_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder={providerUser.last_name || " Nom"}
+                    placeholder={fakeUser?.last_name || " Nom"}
                     {...register("last_name", {
                       required: "Le nom est obligatoire.",
                     })}
@@ -159,7 +160,7 @@ const UserProfile = () => {
                     id="first_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder={providerUser.first_name || " Prénom"}
+                    placeholder={fakeUser?.first_name || " Prénom"}
                     {...register("first_name", { required: "Champ requis." })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
@@ -184,7 +185,7 @@ const UserProfile = () => {
                     id="birthdate"
                     type="date"
 
-                    placeholder={providerUser.birthdate || " Date de naissance"}
+                    placeholder={fakeUser?.birthdate || " Date de naissance"}
                     {...register("birthdate", {
                       valueAsDate: true,
                       required: false,
@@ -199,7 +200,7 @@ const UserProfile = () => {
                     </p>
                   )}
                 </div>
-                {/* providerUser.birthdate : {providerUser.birthdate} */}
+                {/* fakeUser.birthdate : {fakeUser.birthdate} */}
               </div>
               <div className="flex flex-col col-span-2 justify-around items-center border-0 border-pink-500">
                 <img
@@ -371,7 +372,7 @@ const UserProfile = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      placeholder={providerUser.email || " Email"}
+                      placeholder={fakeUser?.email || " Email"}
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}
@@ -437,7 +438,7 @@ const UserProfile = () => {
             </section>
 
             <section id="sectionVolunteer">
-                    {isVolunteer && <VolunteerSection />}
+              {isVolunteer && <VolunteerSection />}
             </section>
           </form>
         </div>
