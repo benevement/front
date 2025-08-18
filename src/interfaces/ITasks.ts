@@ -1,5 +1,5 @@
-import { IEvents } from "./IEvents";
-import UserInterface from "./IUser";
+//import { IEvents } from "./IEvents";
+//import UserInterface from "./IUser";
 import { DateString } from "./types";
 
 
@@ -13,9 +13,9 @@ export interface ITasks  {
     end_date: DateString;
     created_at: DateString;
     updated_at?: DateString;
+    address_id: number; 
+    event_id?: number;
+    created_by_id?: number;    
     // event?: IEvents;
     // user?: UserInterface;
-    address_id: number; 
-    event_id: number;
-    created_by_id: number;    
 }

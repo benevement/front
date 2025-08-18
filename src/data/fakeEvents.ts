@@ -1,5 +1,6 @@
+import { IEvents } from "../interfaces/IEvents";
 
-export const fakeEvents = [
+export const fakeEvents: IEvents[] = [
     {
         id: 1,
         name: "concert Lorient",

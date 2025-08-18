@@ -8,9 +8,9 @@ export interface IEvents  {
     id: number;
     name: string;
     description: string;
-    event_date: Date;
+    event_date: DateString;
     max_participants: number;
-    end_invitation_date: Date;
+    end_invitation_date: DateString;
     status: EventStatusType;
     created_at: DateString;
     updated_at?: DateString;
