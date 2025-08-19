@@ -15,7 +15,7 @@ const Homepage = () => {
           <Link to="/users/89">Ecran "Profil utilisateur"</Link>
         </li>
         <li>
-          <Link to="/events/1/tasks">Ecran "Tasks" pour un bénévole</Link>
+          <Link to="/events/3/tasks">Ecran "Tasks" pour un bénévole</Link>
         </li>
       </ul>
     </>

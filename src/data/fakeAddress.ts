@@ -25,4 +25,13 @@ export const fakeAddress: AddressInterface[] = [
     city: "Port-Louis",
     user_id: 89,
   }, 
+  {
+    id: 4,
+    zip_code: "69000",
+    street_number: "18",
+    street_name: "rue de la république",
+    city: "Lyon",
+    user_id: undefined,
+  }, 
+
 ];

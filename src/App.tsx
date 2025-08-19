@@ -18,7 +18,7 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/navbar' element={<Navbar />} />
         <Route path='/users/:id' element={<UserProfile />} />
-        <Route path='/events/:event_id/tasks' element={<VolunteerTask />} />
+        <Route path='/events/:url_event_id/tasks' element={<VolunteerTask />} />
         {/* <Route path='/users/fake/' element={<FakeUserComp />} /> */}
       </Routes>
   )
