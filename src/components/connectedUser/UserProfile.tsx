@@ -2,7 +2,7 @@
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UserAddressInterface } from "../../interfaces/IUser";
+import { UserAddressInterface, roleType } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { fakeAddress } from "../../data/fakeAddress";
@@ -10,6 +10,7 @@ import { useAuthStore } from "../../stores/useAuthStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
 import fakeUsers from "../../data/fakeUsers";
 import { useParams } from "react-router-dom";
+import UserProfile_adm from "../admin/UserProfile_adm";
 
 
 const UserProfile = () => {
@@ -17,10 +18,16 @@ const UserProfile = () => {
 
   // variables d'authentifications tirées du store
   const role = useAuthStore((state) => (state.user?.role));
+  // TODO: faire des essais avec le store
+
+  //const role: string = "admin";       // pour les tests en fonction du rôle
+  let screenTitle = null;
+  if (role === "admin") {screenTitle = <UserProfile_adm />} 
   // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
   const isVolunteer = role && role == "volunteer" ? true : false;
+  const isAdmin = role && role === "admin" ? true : false;
 
   //const userThis: UserInterface = fakeUsers[id];
 
@@ -113,6 +120,9 @@ const UserProfile = () => {
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-2 border-blue-500">
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-2 border-amber-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            
+            {isAdmin && screenTitle}
+
             <section id="sectionTop" className="h-1/3 grid sm:grid-cols-5">
               {" "}
               {/* alignement sur 2 colonnes */}
@@ -203,21 +213,15 @@ const UserProfile = () => {
                 {/* fakeUser.birthdate : {fakeUser.birthdate} */}
               </div>
               <div className="flex flex-col col-span-2 justify-around items-center border-0 border-pink-500">
-                <img
-                  className="w-3/5 mt-3"
-                  src={urlPhotoView}
-                  alt="Photo de profil"
-                />{" "}
+                {/*  Affichage Christophe Colomb si role = "admin", sinon photo de profil utilisateur. */}
+                {<img className="w-3/5 mt-3" src={isAdmin && "/images/adminAvatar.png" || urlPhotoView} alt="Photo de profil" />}
+                {" "}
                 {/*   <PHOTO>   */}
                 <div className="grid grid-col-5 col-span-5 text-sm justify-right">
                   {" "}
                   {/*   <BOUTON>   */}
-                  <button
-                    type="submit"
-                    className="custom-button paddingButton2"
-                  >
-                    chang. Photo
-                  </button>
+                  {!isAdmin && <button type="submit" className="custom-button paddingButton2" > chang. Photo </button> }
+
                 </div>
               </div>
             </section>{" "}

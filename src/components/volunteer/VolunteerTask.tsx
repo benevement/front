@@ -24,6 +24,7 @@ const VolunteerTask = () => {
     
 
     // TODO: typage typescript
+    // TODO: obtenir les infos à partir du Back après le SignIn (puis du user Store dans React) au lieu de passer par l'url ?
 
     // l'évènement correspond à l'event_id dans l'url - ex : http://localhost:5173/events/1/tasks
     const event = fakeEvents.find((e) => (e.id === Number(url_event_id)))
