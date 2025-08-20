@@ -1,8 +1,9 @@
-import { AddressInterface } from "./IAddress";
-import UserInterface from "./IUser";
 import { DateString } from "./types";
 
 export type EventStatusType = 'created'|'published'|'canceled'|'finished'
+
+
+// permet de représenter le typage pour les champs de la table "event"
 
 export interface IEvents  {
     id: number;

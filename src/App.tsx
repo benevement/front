@@ -6,6 +6,7 @@ import Navbar from './components/Navbar'
 import SignUp from './components/SignUp'
 import UserProfile from './components/connectedUser/UserProfile'
 import VolunteerTask from './components/volunteer/VolunteerTask'
+import FormTest from './pages/FormTest'
 // import FakeUserComp from './components/common/FakeUserComp'
 
 
@@ -19,6 +20,7 @@ function App() {
         <Route path='/navbar' element={<Navbar />} />
         <Route path='/users/:id' element={<UserProfile />} />
         <Route path='/events/:url_event_id/tasks' element={<VolunteerTask />} />
+        <Route path='/formtest' element={<FormTest />} />
         {/* <Route path='/users/fake/' element={<FakeUserComp />} /> */}
       </Routes>
   )

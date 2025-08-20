@@ -72,16 +72,13 @@ function selectUserTasks(eventTaskArr: ITasks[], userTaskArr: user_taskType[]){
                     {/* <section id="sectionLeft" className="grid sm:grid-cols-[40%,60%] h-max bg-amber-400"> */}
                     {/* col-span-2 max-sm:-col-end-2  */}
                     <div className="bg-cyan-400/10 h-10">HEADER</div>
-                    <div className="grid grid-cols-5 gap-x-3 bg-neutral-50 h-screen">
+                    <div className="grid grid-cols-5 gap-x-3 bg-neutral-50 h-96">
                         <div className="px-2 col-span-2 bg-red-0 text-sm">
                             <p className="font-black mt-2 mb-2">{event?.name.toUpperCase()}</p>
                             <div className="border-2 border-stone-400 rounded-xl p-2">
                                 <ul>
                                     <li>
-                                        {event_address?.street_number}
-                                    </li>
-                                    <li>
-                                        {event_address?.street_name}
+                                        {event_address?.street_number}, {event_address?.street_name}
                                     </li>
                                     <li>
                                         {event_address?.zip_code} {event_address?.city}
