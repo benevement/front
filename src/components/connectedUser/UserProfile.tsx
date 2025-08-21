@@ -2,7 +2,7 @@
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UserAddressInterface, roleType } from "../../interfaces/IUser";
+import { UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { fakeAddress } from "../../data/fakeAddress";

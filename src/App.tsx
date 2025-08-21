@@ -1,5 +1,6 @@
-import { Route, Routes } from 'react-router-dom'
-//import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import EventForm from './components/Events/EventForm'
+import EventDetails from './components/Events/EventsDetails'
 import Homepage from './pages/Homepage'
 import SignIn from './components/SignIn'
 import Navbar from './components/Navbar'
@@ -12,18 +13,26 @@ import FormTest from './pages/FormTest'
 
 function App() {
 
-  return (    
+  return (
+    <BrowserRouter>
       <Routes>
+
         <Route path='/' element={<Homepage />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/navbar' element={<Navbar />} />
+        <Route path="/events/new" element={<EventForm />} />
+        <Route path="/events/:id/edit" element={<EventForm />} />
+        <Route path="/events/:id/" element={<EventDetails />} />
         <Route path='/users/:id' element={<UserProfile />} />
         <Route path='/events/:url_event_id/tasks' element={<VolunteerTask />} />
         <Route path='/formtest' element={<FormTest />} />
         {/* <Route path='/users/fake/' element={<FakeUserComp />} /> */}
-      </Routes>
-  )
-}
 
-export default App
+      </Routes>
+    </BrowserRouter>
+  )
+
+
+}
+export default App;

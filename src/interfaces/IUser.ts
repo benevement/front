@@ -32,6 +32,16 @@ export interface IAuthState {
     logout: () => void;
   }
 
+export interface IUser {
+  id: number;
+  email: string;
+  firstname: string;
+  lastname: string;
+  role: roleType;
+  adress: AddressInterface;
+  phone_number?: string;
+}
+
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(90) NOT NULL,

@@ -1,3 +1,7 @@
+// pour tests *********** à virer ensuite.
+
+/*
+
 import { useEffect, useState } from "react";
 import { getAxiosUser } from "../../services/api/auth";
 
@@ -11,16 +15,18 @@ const recupUserList = async () => {
 }
 
 useEffect(() => {
-    recupUserList();
+    //recupUserList();
     console.log(showUser);
 },[])
 
 return (
         <>
         <h1>FakeUserComp</h1>
-        {/* {showUser} */}
+        
         </>
     )
 }
 
 export default FakeUserComp;
+
+*/

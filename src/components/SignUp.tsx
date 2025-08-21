@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { register as registerUser } from "../services/api/auth";
+import UserService from '../services/UserService';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { UserSignupInterface } from "../interfaces/IUser";
@@ -23,11 +23,12 @@ export default function SignUp() {
   } = useForm<UserSignupInterface>();
 
   const navigate = useNavigate();
+  const userService = new UserService();
   const password = watch("password") || "";
 
   const onSubmit = async (data: UserSignupInterface) => {
     try {
-      await registerUser({
+      await userService.register({
         email: data.email,
         password: data.password,
         phone_number: data.phone_number,

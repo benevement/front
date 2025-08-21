@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-
 
 interface Idata {
     username: string;
@@ -14,8 +12,6 @@ function FormTest() {
             setTimeout(resolve, ms);
         })
     } 
-
-//const [isSubmitting, setIsSubmitting] = useState<Boolean>(false);
 
     const onSubmit: SubmitHandler<Idata> = async (data) => {
         

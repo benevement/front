@@ -1,4 +1,4 @@
-import { IEvents } from "../interfaces/IEvents";
+import { IEvents } from "../interfaces/IEvent";
 
 export const fakeEvents: IEvents[] = [
     {

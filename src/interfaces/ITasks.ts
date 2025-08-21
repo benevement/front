@@ -1,6 +1,3 @@
-//import { IEvents } from "./IEvents";
-//import UserInterface from "./IUser";
-import IUser from "./IUser";
 import { DateString } from "./types";
 
 

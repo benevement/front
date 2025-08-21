@@ -1,15 +1,8 @@
 import { useForm } from "react-hook-form";
-import { login } from "../services/api/auth";
 import { useNavigate } from "react-router-dom";
 import { UserSignInInterface } from "../interfaces/IUser";
+import UserService from '../services/UserService';
 
-// commenté suite import de l'interface
-/*
-type FormValues = {
-  email: string;
-  password: string;
-};
-*/
 
 export default function SignIn() {
   const {
@@ -19,10 +12,11 @@ export default function SignIn() {
   } = useForm<UserSignInInterface>();
 
   const navigate = useNavigate();
+  const userService = new UserService();
 
   const onSubmit = async (data: UserSignInInterface) => {
     try {
-      await login(data);
+      await userService.login(data);
       console.log("✅ Connexion réussie");
       navigate("/");
     } catch (err: unknown) {

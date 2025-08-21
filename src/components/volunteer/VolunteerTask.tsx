@@ -45,9 +45,9 @@ const VolunteerTask = () => {
     //fonction pour retourner un tableau des tâches correspondant à 1 event et 1 user (utilise les données de la table de jointure)
 function selectUserTasks(eventTaskArr: ITasks[], userTaskArr: user_taskType[]){
     const tempArr = [];
-    for (let taskObj of eventTaskArr){
-        if (taskObj.hasOwnProperty('id')) {
-            for (let line of userTaskArr){
+    for (const taskObj of eventTaskArr){
+        if (Object.prototype.hasOwnProperty.call(taskObj,'id')) {
+            for (const line of userTaskArr){
                 if (taskObj.id===line.task_id){
                     tempArr.push(taskObj);
                 }

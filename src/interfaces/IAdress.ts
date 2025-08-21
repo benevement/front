@@ -4,6 +4,5 @@ export interface AddressInterface {
     street_number: string;
     street_name: string;
     city: string;
-    user_id?: number;
 }
 
