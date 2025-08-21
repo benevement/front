@@ -1,10 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Homepage from './components/Homepage'
+import Homepage from './pages/Homepage'
 import SignIn from './components/SignIn'
 import Navbar from './components/Navbar'
 import SignUp from './components/SignUp'
 import EventForm from './components/Events/EventForm'
 import EventDetails from './components/Events/EventsDetails'
+
+import './App.css'
 
 function App() {
 
