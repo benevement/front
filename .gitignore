@@ -25,3 +25,4 @@ dist-ssr
 
 # Autre
 test/
+.gitignore
