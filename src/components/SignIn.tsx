@@ -1,7 +1,10 @@
 import { useForm } from "react-hook-form";
-import { login } from "../services/api/auth";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import { UserSignInInterface } from "../interfaces/IUser";
+=======
+import UserService from '../services/UserService';
+>>>>>>> 1f501829afe576b7e04be1fecf169d9fa1b6918f
 
 // commenté suite import de l'interface
 /*
@@ -19,10 +22,11 @@ export default function SignIn() {
   } = useForm<UserSignInInterface>();
 
   const navigate = useNavigate();
+  const userService = new UserService();
 
   const onSubmit = async (data: UserSignInInterface) => {
     try {
-      await login(data);
+      await userService.login(data);
       console.log("✅ Connexion réussie");
       navigate("/");
     } catch (err: unknown) {

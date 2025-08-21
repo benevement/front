@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { AddressInterface } from "./IAddress";
 
 export type roleType =  "admin" | "volunteer" | "connected_user" | "visitor"; 
@@ -37,3 +38,16 @@ export interface UserAddressInterface extends UserInterface, AddressInterface {
   `created_at` DATETIME NULL DEFAULT now(),
   `updated_at` DATETIME NULL DEFAULT now(),
   */
+=======
+import { AddressInterface } from "./IAdress";
+
+export interface IUser {
+  id: number;
+  email: string;
+  firstname: string;
+  lastname: string;
+  role: string;
+  adress: AddressInterface;
+  phone_number?: string;
+}
+>>>>>>> 1f501829afe576b7e04be1fecf169d9fa1b6918f
