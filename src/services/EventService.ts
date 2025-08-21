@@ -16,7 +16,10 @@ export default class EventService {
   createEvent = async (data: IEvent) => {
     try {
       const response = await api.post("/events", data)
-      return response.data
+      return {
+        data: response.data,
+        status: response.status
+      };
     } catch (error) {
       console.error(error);
       throw new Error("Failed to create event");
@@ -33,9 +36,19 @@ export default class EventService {
     }
   }
 
-  updateEvent = async (id:number, data: IEvent) => {
+  updateEvent = async (eventId: number, data: IEvent) => {
+
+    // Surement à modifier postérieurement en fonction des éléments qui seront présents en back
+    const { creator, id, ...updatedData } = data;
+
+    const formattedData = {
+      ...updatedData,
+      date: new Date(data.date).toISOString(),
+    };
+
+    console.log("data a envoyer", formattedData);
     try {
-      const response = await api.patch(`/events/${id}`, data);
+      const response = await api.patch(`/events/${eventId}`, formattedData);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -49,9 +62,38 @@ export default class EventService {
       const response = await api.delete(`/events/${id}`);
       return response.data;
     } catch (error) {
+        console.error(error);
+        throw new Error("Failed to delete event");
+    }
+  }
+
+  publishEvent = async (id: number) => {
+  try {
+    const response = await api.patch(`/events/${id}`, { status: "PUBLISHED" });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to publish event");
+  }
+}
+
+  getEventByUser = async (id: number) => {
+    try {
+      const response = await api.get(`/events/creator/${id}`);
+      return response.data;
+    } catch (error) {
       console.error(error);
       throw new Error("Failed to delete event");
     }
-    }
+  }
 
+  getEventByUserAndStatus = async (userId: number, status: string) => {
+    try {
+      const response = await api.get(`/events/user/${userId}/events/status/${status}`);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to fetch events by user and status");
+    }
+  }
 }

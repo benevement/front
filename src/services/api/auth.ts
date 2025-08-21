@@ -1,42 +1,26 @@
-import api from '../api';
-import { useAuthStore } from '../../stores/useAuthStore';
+// stores/useAuthStore.ts
+import { create } from 'zustand';
 
-type LoginInput = {
+interface User {
+  id: number;
   email: string;
-  password: string;
-};
+  role: string;
+}
 
-type RegisterInput = {
-  email: string;
-  password: string;
-  phone_number?: string;
-};
+interface AuthState {
+  user: User | null;
+  setAuth: (user: User) => void;
+  logout: () => void;
+}
 
-type AuthResponse = {
-  access_token: string;
-  user: {
-    id: number;
-    email: string;
-    role: string;
-  };
-};
-
-export const login = async (input: LoginInput): Promise<void> => {
-  const response = await api.post<AuthResponse>('/auth/login', input);
-  const { access_token, user } = response.data;
-
-  const { setAuth } = useAuthStore.getState();
-  setAuth(user, access_token);
-
-  localStorage.setItem('token', access_token);
-};
-
-export const register = async (input: RegisterInput): Promise<void> => {
-  const response = await api.post<AuthResponse>('/auth/register', input);
-  const { access_token, user } = response.data;
-
-  const { setAuth } = useAuthStore.getState();
-  setAuth(user, access_token);
-
-  localStorage.setItem('token', access_token);
-};
+export const useAuthStore = create<AuthState>((set) => ({
+  user: JSON.parse(localStorage.getItem("user") || "null"),
+  setAuth: (user) => {
+    localStorage.setItem("user", JSON.stringify(user));
+    set({ user });
+  },
+  logout: () => {
+    localStorage.removeItem("user");
+    set({ user: null });
+  },
+}));

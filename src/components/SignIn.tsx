@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
-import { login } from "../services/api/auth";
 import { useNavigate } from "react-router-dom";
+import UserService from '../services/UserService';
 
 type FormValues = {
   email: string;
@@ -15,10 +15,11 @@ export default function SignIn() {
   } = useForm<FormValues>();
 
   const navigate = useNavigate();
+  const userService = new UserService();
 
   const onSubmit = async (data: FormValues) => {
     try {
-      await login(data);
+      await userService.login(data);
       console.log("✅ Connexion réussie");
       navigate("/");
     } catch (err: unknown) {
