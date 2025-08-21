@@ -68,21 +68,13 @@ const UserProfile = () => {
   const onSubmit: SubmitHandler<UserAddressInterface> = (data) =>
     console.log(data);
 
-  const handleClick = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    //console.log("email dans signup : ", email);
-    // traitement
-  };
-
   function imageProfileUrl(id: number): string {
-
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
     console.log("photoUrl : ", photoUrl);
     return photoUrl;
   }
-  const [urlPhotoView, setUrlPhotoView] = useState<string>(
-    "/images/UserProfile/colomb-82.png"
-  );
+
+  const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
     let photo = imageProfileUrl(fakeUser?.id || 0);
