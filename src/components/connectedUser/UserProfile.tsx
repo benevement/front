@@ -11,10 +11,12 @@ import { VolunteerSection } from "../volunteer/UserProfile_vol";
 import fakeUsers from "../../data/fakeUsers";
 import { useParams } from "react-router-dom";
 import UserProfile_adm from "../admin/UserProfile_adm";
+import UserService from "../../services/UserService";
 
 
 const UserProfile = () => {
 
+  const us = new UserService();
 
   // variables d'authentifications tirées du store
   const role = useAuthStore((state) => (state.user?.role));
@@ -421,7 +423,7 @@ const UserProfile = () => {
               </div>
 
               <div className="flex flex-col justify-around col-span-2 ml-2">
-                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3">
+                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}>
                   {/*Mettre à jour */}
                   Enregistrer
                 </button>

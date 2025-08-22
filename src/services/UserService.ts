@@ -1,7 +1,7 @@
 // services/userService.ts
 import api from './api';
 import { useAuthStore } from '../stores/useAuthStore';
-import { roleType } from '../interfaces/IUser';
+import { UserAddressInterface, roleType } from '../interfaces/IUser';
 
 export interface IUser {
   id: number;
@@ -90,6 +90,19 @@ export default class UserService {
   updateUser = async (id: number, data: Partial<IUser>): Promise<IUser> => {
     try {
       const response = await api.patch(`/users/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to update user');
+    }
+  };
+
+  // ajout 21/08 pour update profil utilisateur
+  // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
+  // TODO: voir typage retour de fonction
+  updateUserPut = async (id: number, data: Omit<UserAddressInterface, 'id'|'password'|'avatar'>) => {
+    try {
+      const response = await api.put(`/users/${id}`, data);
       return response.data;
     } catch (error) {
       console.error(error);
