@@ -1,4 +1,4 @@
-import { AddressInterface } from "./IAdress";
+import { AddressInterface } from "./IAddress";
 import { DateString } from "./types";
 
 export interface IEvent {

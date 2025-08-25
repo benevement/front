@@ -104,10 +104,6 @@ const UserProfile = () => {
     imageLoad();
   }, []);
 
-  // Personnalisation des boutons supplémentaires pour le bénévole :
-  //const varcol = isVolunteer ? 3 : 5; //commenté 23/07/25
-
-
 
   return (
     <>

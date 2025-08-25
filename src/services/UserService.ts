@@ -100,7 +100,7 @@ export default class UserService {
   // ajout 21/08 pour update profil utilisateur
   // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
   // TODO: voir typage retour de fonction
-  updateUserPut = async (id: number, data: Omit<UserAddressInterface, 'id'|'password'|'avatar'>) => {
+  updateUserPut = async (id: number, data: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
     try {
       const response = await api.put(`/users/${id}`, data);
       return response.data;
@@ -118,4 +118,14 @@ export default class UserService {
       throw new Error('Failed to delete user');
     }
   };
+
 }
+
+
+
+  // calcul de l'age d'un user
+  export function agecalc(birthday: Date): number {
+    birthday = new Date(birthday);
+    const age = Number(((Date.now() - birthday.getTime()) / 31536000000).toFixed(0));
+    return age; 
+  }

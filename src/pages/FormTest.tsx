@@ -1,35 +1,78 @@
 import { SubmitHandler, useForm } from "react-hook-form";
+import api from "../services/api";
+import { useState } from "react";
+import { UserInterfaceBdd } from "../interfaces/IUser";
+import fakeUsers from "../data/fakeUsers";
+import { useAuthStore2 } from "../stores/useAuthStore2";
 
 interface Idata {
-    username: string;
+  username: string;
 }
 
 function FormTest() {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Idata>();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Idata>(
+    {
+       defaultValues: {
+      username: "Toto",
+    }}
+  );
+
+  async function sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    })
+  }
+
+  const onSubmit: SubmitHandler<Idata> = async (data) => {
+
+    await sleep(1000);
+    if (data.username === "bill") {
+      alert(JSON.stringify(data));
+    } else {
+      console.log
+      alert("Formulaire envoyé, mec.");
+
+    }
+  };
+
+  type axiosDataType = {message: string, fakusers: UserInterfaceBdd[]} | undefined
+  const [axiosData, setAxiosData] = useState<axiosDataType>();
+  //const axiosDataArr: Omit<axiosDataType, "message"> =  axiosData ? Object.entries(axiosData.fakusers) : [];
+  const axiosDataArr: UserInterfaceBdd[] = axiosData?.fakusers ?? [];
+  console.log("**fakeusers : ", Array.from(axiosDataArr));
+  // TODO: mettre tous les userFakers dans Nest ?
+  // TODO: test update
+  // TODO: faire tests avec Prisma 
+
+
+// utilisation du Store (useAuthStore2)
+const {user, connection_date, setUser, getAge} = useAuthStore2();
+
+
+  const handleList = async () => {
+    console.log("handle List");
+    try {
+      const res = await api.get('/users');
+      console.log("res.data *1* :", res.data);
+      const {message, fakusers} = res.data;
+      setAxiosData(fakusers[0]); // => UseState
+      console.log("message : ",message)
+        console.log("res.data.fakusers[1] : ", res.data.fakusers[1]);
+        setUser(res.data.fakusers[1]); // => store
+        console.log("enregistrement de l'utilisateur dans le Store.");      
+    }
+    catch (err) {
+      console.error("erreur get axios : ", err);
+    }
+  }
   
-    async function sleep(ms: number){
-        return new Promise ((resolve) => {
-            setTimeout(resolve, ms);
-        })
-    } 
+  const messageSubmit = isSubmitting ? "Transfert en cours..." : "";
 
-    const onSubmit: SubmitHandler<Idata> = async (data) => {
-        
-      await sleep(2000);
-      if (data.username === "bill") {
-        alert(JSON.stringify(data));
-      } else {
-        alert("There is an error");
-
-      }
-    };
-  
-const messageSubmit = isSubmitting ? "Transfert en cours..." : "";
-
-    return (
+  return (
+    <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="username">User Name</label>
-        <input className="block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        <input className="inline-block px-5 m-3 border-2 rounded-2xl"
           placeholder="Bill"
           {...register("username", { required: "Le nom est obligatoire..." })}
         />
@@ -37,8 +80,24 @@ const messageSubmit = isSubmitting ? "Transfert en cours..." : "";
         <input type="submit" className="custom-button" disabled={isSubmitting} />
         {/* isSubmitting && <p>test</p> */}
         {<p>{messageSubmit}</p>}
-      </form>
-    );
-  }
 
-  export default FormTest;
+
+      </form>
+
+      <div className="m-2xl m-10 bg-emerald-100">
+        <button className="custom-button" onClick={handleList}>Listing users</button>
+      </div>
+
+      {/* {axiosData && axiosData.fakusers.forEach((item) => (`<p>${item}</p>`))} */}
+      
+<h2>{axiosData && axiosData.message}</h2>
+
+{axiosDataArr.map(user => (
+  <p key={user.id}>{user.email} - {user.birthdate} - {user.role} - {user.first_name} {user.last_name} - {user.updatedAt?.toLocaleString()}</p>
+))}
+    </>
+
+  );
+}
+
+export default FormTest;

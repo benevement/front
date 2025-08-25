@@ -20,8 +20,12 @@ export default interface UserInterface extends UserSignInInterface, UserSignupIn
 }
 
 export interface UserAddressInterface extends UserInterface, AddressInterface {
-    // réunion des interfaces AddressInterface et UserInterface (pour utilisation dans écran UserProfile)
+  // réunion des interfaces AddressInterface et UserInterface (pour utilisation dans écran UserProfile)
+}
 
+export interface UserInterfaceBdd extends UserInterface{
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IAuthState {
@@ -41,6 +45,9 @@ export interface IUser {
   adress: AddressInterface;
   phone_number?: string;
 }
+
+
+
 
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

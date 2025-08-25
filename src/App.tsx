@@ -20,12 +20,15 @@ function App() {
 
         <Route path='/' element={<Homepage />} />
         <Route path='/liens' element={<HomePageLiens />} />     {/*temporaire */}
+        
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/navbar' element={<Navbar />} />
+
         <Route path="/events/new" element={<EventForm />} />
         <Route path="/events/:id/edit" element={<EventForm />} />
         <Route path="/events/:id/" element={<EventDetails />} />
+        
         <Route path='/users/:id' element={<UserProfile />} />
         <Route path='/events/:url_event_id/tasks' element={<VolunteerTask />} />
         <Route path='/formtest' element={<FormTest />} />
