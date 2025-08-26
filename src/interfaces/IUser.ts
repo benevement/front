@@ -1,6 +1,6 @@
 import { AddressInterface } from "./IAddress";
 
-export type roleType =  "admin" | "volunteer" | "connected_user" | "visitor"; 
+export type roleType =  "admin" | "volunteer" | "connected_user" ;
 
 export interface UserSignInInterface {
     email: string;
