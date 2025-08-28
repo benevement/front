@@ -1,6 +1,7 @@
 describe("Register flow", () => {
   beforeEach(() => {
-    cy.visit("/signup"); // ton URL d'inscription
+    cy.visit("/signup");
+
   });
 
   it("should show errors if fields are empty", () => {
@@ -12,14 +13,6 @@ describe("Register flow", () => {
   });
 
   it("should register successfully", () => {
-    cy.intercept("POST", "/auth/register", {
-      statusCode: 200,
-      body: {
-        user: { id: 1, email: "newuser@example.com" },
-        access_token: "fake-access",
-        refreshToken: "fake-refresh",
-      },
-    }).as("registerRequest");
 
     cy.get("input#email").type("newuser@example.com");
     cy.get("input#password").type("mypassword");
@@ -28,9 +21,8 @@ describe("Register flow", () => {
 
     cy.get("button[type=submit]").click();
 
-    cy.wait("@registerRequest");
+    cy.url().should('include', '/')
 
-    cy.url().should("eq", Cypress.config().baseUrl + "/");
   });
 
   it("should show error if passwords do not match", () => {

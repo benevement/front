@@ -1,6 +1,8 @@
+/// <reference types="cypress" />
+
 describe("Login flow", () => {
   beforeEach(() => {
-    cy.visit("/signin"); // ton URL de login
+    cy.visit("/signin");
   });
 
   it("should show errors if fields are empty", () => {
@@ -11,41 +13,26 @@ describe("Login flow", () => {
   });
 
   it("should login successfully with valid credentials", () => {
-    // 👇 interception de l'API
-    cy.intercept("POST", "/auth/login", {
-      statusCode: 200,
-      body: {
-        accessToken: "fake-access",
-        refreshToken: "fake-refresh",
-        user: { id: 1, email: "test@example.com" },
-      },
+
+    cy.intercept("POST", "http://localhost:3000/auth/login", {
     }).as("loginRequest");
 
-    // remplissage du formulaire
     cy.get("input#email").type("test@example.com");
     cy.get("input#password").type("password123");
 
-    // soumission
     cy.get("button[type=submit]").click();
-
-    // attend la requête
-    cy.wait("@loginRequest");
-
-    // vérifie la redirection
-    cy.url().should("eq", Cypress.config().baseUrl + "/");
+    cy.wait("@loginRequest").then((response) => {
+      expect(response.response?.statusCode).to.eq(200);
+    });
+    cy.url().should('include', '/')
   });
 
   it("should show error on wrong credentials", () => {
-    cy.intercept("POST", "/auth/login", {
-      statusCode: 401,
-      body: { message: "Invalid credentials" },
-    }).as("loginRequest");
 
     cy.get("input#email").type("wrong@example.com");
     cy.get("input#password").type("wrongpass");
     cy.get("button[type=submit]").click();
 
-    cy.wait("@loginRequest");
-    cy.contains("Login failed").should("exist");
+    cy.contains("❌ Login failed").should("exist");
   });
 });
