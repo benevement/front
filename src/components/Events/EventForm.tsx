@@ -49,7 +49,7 @@ export default function EventForm() {
     });
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     if (id) {
       setIsEditing(true);
       eventService.getEventById(Number(id)).then((event) => {
