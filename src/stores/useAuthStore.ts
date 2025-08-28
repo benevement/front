@@ -1,4 +1,3 @@
-// stores/useAuthStore.ts
 import { create } from 'zustand';
 import { roleType } from '../interfaces/IUser';
 
@@ -9,26 +8,30 @@ interface User {
 }
 
 interface AuthState {
-
-  //user: { email: string; role: string } | null;
-  user: { email: string; role: roleType } | null;
-  token: string | null;
-  setAuth: (user: User, token: string) => void;
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: JSON.parse(localStorage.getItem("user") || "null"),
-  token: localStorage.getItem("token"),
+  accessToken: localStorage.getItem("accessToken"),
+  refreshToken: localStorage.getItem("refreshToken"),
 
-  setAuth: (user, token) => {
+  setAuth: (user, accessToken, refreshToken) => {
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
-    set({ user, token });
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    set({ user, accessToken, refreshToken });
+    console.log('user connecté', user, accessToken, refreshToken);
   },
+
   logout: () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    set({ user: null, token: null });
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    set({ user: null, accessToken: null, refreshToken: null });
   },
 }));

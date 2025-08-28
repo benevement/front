@@ -24,16 +24,16 @@ export interface RegisterInput {
 export default class UserService {
   private store = useAuthStore.getState();
 
-  private setAuth = (user: IUser, token: string) => {
-    this.store.setAuth(user, token);
+  private setAuth = (user: IUser, accessToken: string, refreshToken: string) => {
+    this.store.setAuth(user, accessToken, refreshToken);
   };
 
   // --- AUTH ---
   login = async (input: LoginInput): Promise<IUser> => {
     try {
-      const response = await api.post<{ access_token: string; user: IUser }>('/auth/login', input);
-      const { user, access_token } = response.data;
-      this.setAuth(user, access_token);
+      const response = await api.post<{ accessToken: string; refreshToken: string; user: IUser }>('/auth/login', input);
+      const { user, accessToken, refreshToken } = response.data;
+      this.store.setAuth(user, accessToken, refreshToken);
       return user;
     } catch (error) {
       console.error(error);
@@ -43,9 +43,9 @@ export default class UserService {
 
   register = async (input: RegisterInput): Promise<IUser> => {
     try {
-      const response = await api.post<{ access_token: string; user: IUser }>('/auth/register', input);
-      const { user, access_token } = response.data;
-      this.setAuth(user, access_token);
+      const response = await api.post<{ user: IUser, access_token: string, refreshToken: string }>('/auth/register', input);
+      const { user, access_token, refreshToken } = response.data;
+      this.setAuth(user, access_token, refreshToken);
       return user;
     } catch (error) {
       console.error(error);
