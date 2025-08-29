@@ -1,4 +1,6 @@
+@import "./assets/css/common.css";
 @import "tailwindcss";
+
 
 #root {
   /* display: flex;
@@ -9,7 +11,7 @@
   --blueButton: #01325C;
   --outlineBorder: #CB8B4E;
   --lightText: #DEDEDE;
-}
+} 
 
 .card {
   padding: 2em; 
@@ -57,3 +59,4 @@ theme: {
   extend : {}
 },
 */
+

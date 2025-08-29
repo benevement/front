@@ -5,7 +5,7 @@ const HomePageLiens = () => {
   return (
     <>
       <div className="text-amber-700">
-        <h1>Homepage</h1>
+        <h1>Homepage - Liens</h1>
       </div>
       <div>
         <h2>Quelques liens en dur pour le moment :</h2>

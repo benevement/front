@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import EventForm from './components/Events/EventForm'
 import EventDetails from './components/Events/EventsDetails'
-import Homepage from './pages/HomePageLiens'
+import Homepage from './pages/Homepage'
 import SignIn from './components/SignIn'
 import Navbar from './components/Navbar'
 import SignUp from './components/SignUp'
@@ -17,9 +17,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         <Route path='/' element={<Homepage />} />
-        <Route path='/liens' element={<HomePageLiens />} />     {/*temporaire */}
+        
+        <Route path='/liens' element={<HomePageLiens />} />
+        {/*temporaire */}
         
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />

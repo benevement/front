@@ -33,6 +33,7 @@ export default class UserService {
     try {
       const response = await api.post<{ access_token: string; user: IUser }>('/auth/login', input);
       const { user, access_token } = response.data;
+      //console.log("UserService, response.data api.post user/token", response?.data)   // pour tests
       this.setAuth(user, access_token);
       return user;
     } catch (error) {
@@ -123,9 +124,9 @@ export default class UserService {
 
 
 
-  // calcul de l'age d'un user
-  export function agecalc(birthday: Date): number {
-    birthday = new Date(birthday);
-    const age = Number(((Date.now() - birthday.getTime()) / 31536000000).toFixed(0));
-    return age; 
-  }
+// calcul de l'age d'un user
+export function agecalc(birthday: Date): number {
+  birthday = new Date(birthday);
+  const age = Number(((Date.now() - birthday.getTime()) / 31536000000).toFixed(0));
+  return age;
+}
