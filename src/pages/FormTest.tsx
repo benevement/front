@@ -1,6 +1,6 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import api from "../services/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserInterfaceBdd } from "../interfaces/IUser";
 //import fakeUsers from "../data/fakeUsers";
 import { useAuthStore2 } from "../stores/useAuthStore2";
@@ -40,10 +40,7 @@ function FormTest() {
   const [axiosData, setAxiosData] = useState<axiosDataType>();
   //const axiosDataArr: Omit<axiosDataType, "message"> =  axiosData ? Object.entries(axiosData.fakusers) : [];
   const axiosDataArr: UserInterfaceBdd[] = axiosData?.fakusers ?? [];
-  console.log("**fakeusers : ", Array.from(axiosDataArr));
-  // TODO: mettre tous les userFakers dans Nest ?
-  // TODO: test update
-  // TODO: faire tests avec Prisma 
+  //console.log("**fakeusers : ", Array.from(axiosDataArr));
 
 
   // utilisation du Store (useAuthStore2)
@@ -69,9 +66,38 @@ function FormTest() {
 
   const messageSubmit = isSubmitting ? "Transfert en cours..." : "";
 
-  function handleClick1(){
-    alert("envoyé !")
+  const [bddUser, setBddUser] = useState<UserInterfaceBdd>();
+  const [pass1, setPass1] = useState<string>("");
+  const [pass2, setPass2] = useState<string>("");
+  const [idChosen, setIdChosen] = useState<string>("1");
+
+  useEffect(() => {
+    console.log("MAJ bddUser, idChosen")
+  }, [bddUser, idChosen])
+
+  async function handleClick1(): Promise<Boolean> {
+
+    try {
+      // recup 1 user à partir de la BDD
+      setBddUser(undefined) // reset du bddUser (useState) si déjà défini
+      const { data } = await api.get(`users/${idChosen}`)
+      if (!data) { throw new Error(`utilisateur ${idChosen} impossible à récupérer.`) }
+      else {
+        if (pass1 === pass2) {
+          console.log(data)
+          if (data && data.password === pass1) {
+            setBddUser(data);
+            return true;
+          }
+        }
+      }
+    }
+    catch (err) {
+      console.log("problème de fonction handleClick1");
+    }
+    return false;
   }
+
 
   return (
     <>
@@ -96,21 +122,36 @@ function FormTest() {
       <div className="px-4 text-green-600 m-3">
         <p>Bonjour, spec. ceci est un blobfish.</p>
       </div>
-      <div data-cy="ladiv2test" className="leading-5 text-3xl text-red-400 mt-5">
-        LADIV2TEST
-      </div>
-      <div data-cy="passwords" className="flex flex-col items-center leading-1 text-2xl text-red-950 max-w-3xl">
-        
-        <label htmlFor="pass1" className="custlabel">Password 1</label>
-        <input id="pass1" name="npass1" type="text" data-cy="password1" className="custinput" />
+      <hr />
+      <p>Password de test : <i className="text-shadow-amber-700 font-bold">Azerty123456#</i></p>
+      <p>Dans le BDD, enregistrement d'1 user avec id=1 :</p>
+      <p className="text-blue-800 text-lg font-light">insert into User values (default, 'Michel', 'Testor', "1973-10-22", "test@test.fr", "Azerty123456#", "02.03.04.05.06", "volunteer", default, default);</p>
+      <div data-cy="passwords" className="flex flex-row items-center leading-1 text-xl text-red-950 max-w-3xl">
 
-        <label htmlFor="pass2" className="custlabel">Password 2 </label>
-        <input id="pass2" name="npass2" type="text" data-cy="password2" className="custinput" />
-       
-       <div className="block h-20 bg-amber-200 min-w-10">&nbsp;</div>
-        <button type="submit" name="nbutt1" id="butt1" className="custom-button" onClick={() => handleClick1()}>Envoyer</button>
-      </div>
+        <label htmlFor="idc" className="custlabel min-w-20 p-5">ID : </label>
+        <select id="idcId" name="idc1" data-cy="select1" className="custinput pl-3 pr-3" onChange={(e) => setIdChosen(e.target.value)}>
+          <option> 1 </option>
+          <option> 2 </option>
+          <option> 3 </option>
+          <option> 4 </option>
+          <option> 5 </option>
+        </select>
 
+
+        <label htmlFor="pass1" className="custlabel min-w-30 p-5">Password 1</label>
+        <input id="pass1" name="npass1" type="password" data-cy="password1" className="custinput" onChange={(e) => setPass1(e.target.value)} />
+
+        <label htmlFor="pass2" className="custlabel min-w-30 p-5">Password 2 </label>
+        <input id="pass2" name="npass2" type="password" data-cy="password2" className="custinput" onChange={(e) => setPass2(e.target.value)} />
+
+        <div className="block h-10 bg-amber-0 min-w-5">&nbsp;</div>
+        <button type="submit" name="nbutt1" id="butt1" className="custom-button" onClick={handleClick1}>Envoyer</button>
+      </div>
+      <div className="text-gray-400">{bddUser ? bddUser?.email : "mail user non défini."}</div>
+      <div className="text-green-800 text-3xl"> {bddUser ? "Trouvé " + bddUser?.first_name + " !" : ""}</div>
+      <div className="text-gray-500">{pass1 ? "pass1 : " + pass1 : "pas de pass1"}</div>
+      <div className="text-gray-500">{pass2 ? "pass2 : " + pass2 : "pas de pass2"}</div>
+      <div className="text-gray-500">{idChosen ? "id : " + idChosen : "ID non défini"}</div>
       <h2>{axiosData && axiosData.message}</h2>
 
       {axiosDataArr.map(user => (
@@ -122,3 +163,6 @@ function FormTest() {
 }
 
 export default FormTest;
+
+// fake user simu.
+// insert into User values (default, 'Michel', 'Testor', "1973-10-22", "test@test.fr", "Azerty123456#", "02.03.04.05.06", "volunteer", default, default);
