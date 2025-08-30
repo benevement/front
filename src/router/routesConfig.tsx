@@ -34,6 +34,7 @@ export const routesConfig = [
   { path: "/liens", element: <HomePageLiens />, allowVisitor: true },
   { path: "/signin", element: <SignIn />, allowVisitor: true },
   { path: "/signup", element: <SignUp />, allowVisitor: true },
+  { path: "/formtest", element: <FormTest />, allowVisitor: true }, // pour tests - temporaire.
 
   // Pages réservées aux utilisateurs connectés
   { path: "/navbar", element: <Navbar />, allowedRoles: allRoles },
@@ -42,7 +43,7 @@ export const routesConfig = [
   { path: "/events/:id/", element: <EventDetails />, allowedRoles: adminRole  },
   { path: "/users/:id", element: <UserProfile />, allowedRoles: allRoles  },
   { path: "/events/:url_event_id/tasks", element: <VolunteerTask />, allowedRoles: eventMembersRoles },
-  { path: "/formtest", element: <FormTest />, allowedRoles: allRoles },
+  //{ path: "/formtest", element: <FormTest />, allowedRoles: allRoles },
 
   // Pages réservées aux rôles supérieurs
 /*   { path: "/dashboard", element: <Dashboard />, allowedRoles: ["connected_user", "manager", "admin"] },
