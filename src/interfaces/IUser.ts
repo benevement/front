@@ -1,6 +1,7 @@
 import { AddressInterface } from "./IAddress";
 
-export type roleType =  "admin" | "volunteer" | "connected_user" | "visitor"; 
+export type roleType =  "admin" | "volunteer" | "connected_user";
+export type roleType2 = "admin" | "volunteer" | "connected_user" | "visitor";
 
 export interface UserSignInInterface {
     email: string;
@@ -16,7 +17,7 @@ export default interface UserInterface extends UserSignInInterface, UserSignupIn
     last_name: string; // nom
     birthdate: string;
     avatar?: string; // URL de la photo utilisateur
-    role: roleType;
+    role: roleType2;
 }
 
 export interface UserAddressInterface extends UserInterface, AddressInterface {

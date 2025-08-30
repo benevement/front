@@ -1,15 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import EventForm from './components/Events/EventForm'
-import EventDetails from './components/Events/EventsDetails'
-import Homepage from './pages/Homepage'
-import SignIn from './components/SignIn'
-import Navbar from './components/Navbar'
-import SignUp from './components/SignUp'
-import UserProfile from './components/connectedUser/UserProfile'
-import VolunteerTask from './components/volunteer/VolunteerTask'
-import FormTest from './pages/FormTest'
 import HomePageLiens from './pages/HomePageLiens'
 // import FakeUserComp from './components/common/FakeUserComp'
+
+import ProtectedRoute from './router/ProtectedRouted'
+import { routesConfig } from './router/routesConfig'
 
 
 function App() {
@@ -17,22 +11,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Homepage />} />
-        
-        <Route path='/liens' element={<HomePageLiens />} />
-        {/*temporaire */}
-        
-        <Route path='/signin' element={<SignIn />} />
-        <Route path='/signup' element={<SignUp />} />
-        <Route path='/navbar' element={<Navbar />} />
 
-        <Route path="/events/new" element={<EventForm />} />
-        <Route path="/events/:id/edit" element={<EventForm />} />
-        <Route path="/events/:id/" element={<EventDetails />} />
-        
-        <Route path='/users/:id' element={<UserProfile />} />
-        <Route path='/events/:url_event_id/tasks' element={<VolunteerTask />} />
-        <Route path='/formtest' element={<FormTest />} />
+        <Route path='/liens' element={<HomePageLiens />} />     {/*temporaire */}
+        {routesConfig.map(({ path, element, allowedRoles, allowVisitor }) => (
+          <Route
+            key={path}
+            element={<ProtectedRoute allowedRoles={allowedRoles} allowVisitor={allowVisitor} />}
+          >
+            <Route path={path} element={element} />
+          </Route>
+        ))}
         {/* <Route path='/users/fake/' element={<FakeUserComp />} /> */}
 
       </Routes>
