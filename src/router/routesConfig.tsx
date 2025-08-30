@@ -1,6 +1,7 @@
 import { roleType } from '../interfaces/IUser';
 
 // Pages visiteurs
+import Homepage from '../pages/Homepage';
 import HomePageLiens from "../pages/HomePageLiens";
 import SignIn from "../components/SignIn";
 import SignUp from "../components/SignUp";
@@ -20,6 +21,7 @@ import ManagerPanel from "./pages/ManagerPanel";
 import AdminPanel from "./pages/AdminPanel"; */
 import GestionRoles from '../components/admin/GestionRoles';
 
+
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
   const eventMembersRoles: roleType[] = ["volunteer", "admin"]
   const adminRole: roleType[] = ["admin"];
@@ -28,7 +30,8 @@ export const routesConfig = [
 
 
   // Pages accessibles aux visiteurs
-  { path: "/", element: <HomePageLiens />, allowVisitor: true },
+  { path: "/", element: <Homepage />, allowVisitor: true },
+  { path: "/liens", element: <HomePageLiens />, allowVisitor: true },
   { path: "/signin", element: <SignIn />, allowVisitor: true },
   { path: "/signup", element: <SignUp />, allowVisitor: true },
 
