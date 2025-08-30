@@ -48,8 +48,6 @@ export interface IUser {
 }
 
 
-
-
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(90) NOT NULL,
