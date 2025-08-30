@@ -124,7 +124,7 @@ function FormTest() {
       </div>
       <hr />
       <p>Password de test : <i className="text-shadow-amber-700 font-bold">Azerty123456#</i></p>
-      <p>Dans le BDD, enregistrement d'1 user avec id=1 :</p>
+      <p>Dans la BDD, enregistrement d'1 user avec id=1 :</p>
       <p className="text-blue-800 text-lg font-light">insert into User values (default, 'Michel', 'Testor', "1973-10-22", "test@test.fr", "Azerty123456#", "02.03.04.05.06", "volunteer", default, default);</p>
       <div data-cy="passwords" className="flex flex-row items-center leading-1 text-xl text-red-950 max-w-3xl">
 
