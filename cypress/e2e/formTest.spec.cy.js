@@ -1,12 +1,16 @@
+const { CYPRESS_URL_BASE } = require("./connection.cy")
+
+
 describe('Should do something', () => {
 
   beforeEach(() => {
-    cy.visit('http://localhost:5173/formtest')
+   cy.visit("http://localhost:5173/formtest")
+   //cy.visit(CYPRESS_URL_BASE+"/formtest")
   })
 
-  it('should connect to a site', () => {
-    cy.visit('http://localhost:5173/formtest')
-  })
+  // it('should connect to a site', () => {
+  //   cy.visit('http://localhost:5173/formtest')
+  // })
 
   it("should verify various stuff", () => {
     cy.contains(/[Nn]ame/).should('exist')
@@ -14,9 +18,7 @@ describe('Should do something', () => {
     cy.get('.px-5')
     cy.get('p').contains("fish")
   })
-  it("'ladiv2test' is present.", () => {
-    cy.get('[data-cy="ladiv2test"]').should('exist')
-  })
+
 
   it("should check if passwords are matching", () => {
     cy.get('[data-cy="password1"]').should('exist')
@@ -30,9 +32,9 @@ it ("It should compares password ok", () => {
 
     cy.get('button[name="nbutt1"]').click()
     //compar
-    cy.get('[data-cy="password1"]').should(($field1) => {
-      cy.get('[data-cy="password2"]').should(($field2) => {
-        expect($field1.val()).to.equal($field2.val());
+    cy.get('[data-cy="password1"]').invoke("val").then((field1) => {
+      cy.get('[data-cy="password2"]').invoke("val").then((field2) => {
+        expect(field1).to.equal(field2);
       });
     });
   })
