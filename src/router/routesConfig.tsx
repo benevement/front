@@ -41,7 +41,7 @@ export const routesConfig = [
   { path: "/events/new", element: <EventForm />, allowedRoles: adminRole  },
   { path: "/events/:id/edit", element: <EventForm />, allowedRoles: adminRole  },
   { path: "/events/:id/", element: <EventDetails />, allowedRoles: adminRole  },
-  { path: "/users/:id", element: <UserProfile />, allowedRoles: allRoles  },
+  { path: "/users/profile", element: <UserProfile />, allowedRoles: allRoles  },
   { path: "/events/:url_event_id/tasks", element: <VolunteerTask />, allowedRoles: eventMembersRoles },
   //{ path: "/formtest", element: <FormTest />, allowedRoles: allRoles },
 

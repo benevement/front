@@ -43,6 +43,7 @@ export default function GestionRoles() {
 
   const handleRoleChange = (id: number, newRole: roleType) => {
     setEditedRoles((prev) => ({ ...prev, [id]: newRole }));
+      //  [id] : propriété calculée, correspond à la valeur de id passé en param.
     console.log(users);
     console.log(id, newRole);
   };
