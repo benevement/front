@@ -35,8 +35,8 @@ export interface IAuthState {
 export interface IUser {
   id: number;
   email: string;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   role: roleType;
   adress: AddressInterface;
   phone_number?: string;

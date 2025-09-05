@@ -1,37 +1,44 @@
-import { create } from 'zustand';
-import { roleType } from '../interfaces/IUser';
+import { create } from "zustand";
+import { IUser } from "../interfaces/IUser";
+import { decodeToken } from "../interfaces/IJwtPayload";
+import { RoleType } from "../../../back/generated/prisma/index";
 
-interface User {
-  id: number;
-  email: string;
-  role: roleType;
-}
-
-interface AuthState {
-  user: User | null;
+type AuthState = {
+  user: IUser | null;
   accessToken: string | null;
-  refreshToken: string | null;
-  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
+  isAuthenticated: boolean;
+  setAuth: (accessToken: string) => void;
   logout: () => void;
-}
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: JSON.parse(localStorage.getItem("user") || "null"),
-  accessToken: localStorage.getItem("accessToken"),
-  refreshToken: localStorage.getItem("refreshToken"),
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
 
-  setAuth: (user, accessToken, refreshToken) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    set({ user, accessToken, refreshToken });
-    console.log('user connecté', user, accessToken, refreshToken);
+  setAuth: (accessToken) => {
+    const decoded = decodeToken(accessToken);
+    if (!decoded) return;
+
+    const user: IUser = {
+      id: decoded.sub,
+      email: decoded.email,
+      role: decoded.role as RoleType,
+      first_name: decoded.first_name ?? "",
+      last_name: decoded.last_name ?? "",
+      phone_number: decoded.phone_number ?? "",
+      adress: decoded.address_id ?? "",
+    };
+
+    // mise à jour du store
+    set({ user, accessToken, isAuthenticated: true });
+
+    // sauvegarde manuelle du flag dans le localStorage
+    localStorage.setItem("isAuthenticated", "true");
   },
 
   logout: () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    set({ user: null, accessToken: null, refreshToken: null });
+    set({ user: null, accessToken: null, isAuthenticated: false });
+    localStorage.removeItem("isAuthenticated");
   },
 }));

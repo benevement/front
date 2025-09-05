@@ -1,14 +1,18 @@
 // services/userService.ts
-import api from './api';
-import { useAuthStore } from '../stores/useAuthStore';
-import { UserAddressInterface, roleType } from '../interfaces/IUser';
+import api, { refreshToken } from './api';
+import { UserAddressInterface } from '../interfaces/IUser';
+import { useEffect } from 'react';
+import { useAuthStore } from "../stores/useAuthStore";
+import { decodeToken } from "../interfaces/IJwtPayload";
+import { IUser } from "../interfaces/IUser";
+import { RoleType } from "../../../back/generated/prisma/index";
 
-export interface IUser {
+/* export interface IUser {
   id: number;
   email: string;
   role: roleType;
   phone_number?: string;
-}
+} */
 
 export interface LoginInput {
   email: string;
@@ -21,32 +25,78 @@ export interface RegisterInput {
   phone_number?: string;
 }
 
+export const useRestoreSession = () => {
+  const { user } = useAuthStore();
+
+   useEffect(() => {
+    const flag = localStorage.getItem("isAuthenticated") === "true";
+    console.log("flag value", flag)
+
+   const restore = async () => {
+      if (flag && !user) {
+        console.log("[Restore] Restoring session...");
+        try {
+          await refreshToken();
+        } catch (err) {
+          console.log("[Restore] Cannot restore session", err);
+        }
+      }
+    };
+
+    restore();
+  }, [user]);
+};
+
+export const updateStoreWithToken = (accessToken: string) => {
+  const decoded = decodeToken(accessToken);
+  if (!decoded) return;
+
+  const user: IUser = {
+    id: decoded.sub,
+    email: decoded.email,
+    role: decoded.role as RoleType,
+    first_name: decoded.first_name ?? "",
+    last_name: decoded.last_name ?? "",
+    phone_number: decoded.phone_number ?? "",
+    adress: decoded.address_id ?? "",
+  };
+
+  // On met directement le token et le user dans le store
+  useAuthStore.setState({
+    accessToken,
+    user,
+    isAuthenticated: true,
+  });
+
+  console.log("nouvel user", user)
+};
+
+
 export default class UserService {
   private store = useAuthStore.getState();
 
-  private setAuth = (user: IUser, accessToken: string, refreshToken: string) => {
-    this.store.setAuth(user, accessToken, refreshToken);
+  private setAuth = (accessToken: string, ) => {
+    this.store.setAuth(accessToken);
   };
 
   // --- AUTH ---
-  login = async (input: LoginInput): Promise<IUser> => {
+  login = async (input: LoginInput) => {
     try {
-      const response = await api.post<{ accessToken: string; refreshToken: string; user: IUser }>('/auth/login', input);
-      const { user, accessToken, refreshToken } = response.data;
-      this.store.setAuth(user, accessToken, refreshToken);
-      return user;
+      const response = await api.post<{ accessToken: string }>('/auth/login', input);
+      const { accessToken } = response.data;
+      this.setAuth(accessToken);
     } catch (error) {
       console.error(error);
       throw new Error('Login failed');
     }
   };
 
-  register = async (input: RegisterInput): Promise<IUser> => {
+  register = async (input: RegisterInput) => {
     try {
-      const response = await api.post<{ user: IUser, access_token: string, refreshToken: string }>('/auth/register', input);
-      const { user, access_token, refreshToken } = response.data;
-      this.setAuth(user, access_token, refreshToken);
-      return user;
+      const response = await api.post<{ user: IUser, accessToken : string, refreshToken: string }>('/auth/register', input);
+      const { accessToken  } = response.data;
+      this.setAuth( accessToken );
+
     } catch (error) {
       console.error(error);
       throw new Error('Registration failed');

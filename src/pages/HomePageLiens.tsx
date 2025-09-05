@@ -27,8 +27,17 @@ const HomePageLiens = () => {
           <li>
             <Link to="/formtest" className="activeLink px-3 bg-blue-200/50 hover:underline">formtest</Link>
           </li>
+           <li>
+            <Link to="/admin/manage_roles" className="activeLink px-3 bg-blue-200/50 hover:underline">Roles managment</Link>
+          </li>
+           <li>
+            <Link to="/test-refresh" className="activeLink px-3 bg-blue-200/50 hover:underline">test refresh</Link>
+          </li>
+           <li>
+            <Link to="/tokenStatus" className="activeLink px-3 bg-blue-200/50 hover:underline">token status</Link>
+          </li>
         </ul>
-        
+
         <ul className="list-disc m-3 pl-3">
           <li><Link to="/events/new" className="activeLink px-3 bg-red-200/50 hover:underline">Event : new</Link></li>
           <li><Link to="/events/:id/edit" className="activeLink px-3 bg-red-200/50 hover:underline">Event : Edit by ID</Link></li>

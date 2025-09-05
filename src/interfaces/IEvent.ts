@@ -1,4 +1,4 @@
-import { AddressInterface } from "./IAdress";
+import { AddressInterface } from "./IAddress";
 import { DateString } from "./types";
 
 export interface IEvent {
@@ -6,11 +6,13 @@ export interface IEvent {
   name: string;
   description: string;
   address: AddressInterface;
-  date: string;
+  event_date: string;
   volunteers_needed: number;
-  invitedVolunteers: number[];
-  creatorId: number;
+  invited_volunteers: number[];
+  created_by_id: number;
   status: string;
+  max_participants: number;
+  end_invitation_date: string;
 }
 
 export type EventStatusType = 'created'|'published'|'canceled'|'finished'
@@ -27,7 +29,7 @@ export interface IEvents  {
     created_at: DateString;
     updated_at?: DateString;
     // address?: AddressInterface;
-    // user?: UserInterface; 
+    // user?: UserInterface;
     address_id?: number;
-    created_by_id?: number;    
+    created_by_id?: number;
 }

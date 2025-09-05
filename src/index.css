@@ -1,22 +1,29 @@
 @import "tailwindcss";
 
 #root {
-  /* display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center; */
-  padding: 2rem;
-  --blueButton: #01325C;
+  --blueColor: #01325C;
   --outlineBorder: #CB8B4E;
   --lightText: #DEDEDE;
 }
 
+body {
+  padding-bottom: 64px;
+}
+
 .card {
-  padding: 2em; 
+  padding: 2em;
+}
+
+.custom-border {
+  border: 1px solid var(--outlineBorder);
+}
+
+.custom-back-color {
+   background-color: var(--blueColor);
 }
 
 .custom-button {
-  background-color: var(--blueButton);
+  background-color: var(--blueColor);
   border: 1px solid var(--outlineBorder);
   color: var(--lightText);
   padding: 12px 24px;
@@ -27,9 +34,21 @@
   background-color: #01528c;
 }
 
+.custom-small-button {
+  background-color: var(--blueColor);
+  border: 1px solid var(--outlineBorder);
+  color: var(--lightText);
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+.custom--small-button:hover{
+  background-color: #01528c;
+}
+
 .paddingButton2 {
   padding: 0.4em 1em;
-  margin-top: 0.4em; 
+  margin-top: 0.4em;
   /* margin-bottom: 3px; */
   width: 100%;
 }
@@ -49,11 +68,11 @@ h2 {
   margin: 0.5em 0 0.5em 0;
 }
 
-/*
-theme: {
-  colors: {
-    'chocolate': '#D2691E'
-  },
-  extend : {}
-},
-*/
+.custom-navbar {
+  background-color: var(--blueColor);
+
+}
+
+.custom-footer {
+  background-color: var(--blueColor);
+}

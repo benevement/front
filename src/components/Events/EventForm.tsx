@@ -9,11 +9,10 @@ import { useAuthStore } from "../../stores/useAuthStore";
 
 const eventService = new EventService();
 
-
 type Volunteer = {
   id: number;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   email: string;
 };
 
@@ -32,9 +31,10 @@ export default function EventForm() {
   const { user } = useAuthStore.getState();
   const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [invitedVolunteers, setInvitedVolunteers] = useState<number[]>([]);
+  const [invited_volunteers, setInvitedVolunteers] = useState<number[]>([]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentEvent, setCurrentEvent] = useState<IEvent | null>(null);
+  const [currentStatus, setCurrentStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
@@ -50,29 +50,44 @@ export default function EventForm() {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      setIsEditing(true);
-      eventService.getEventById(Number(id)).then((event) => {
+    const fetchEvent = async () => {
+      if (!id) return;
+
+      try {
+        setIsEditing(true);
+        const numericId = parseInt(id);
+        const eventWithAddress = await eventService.getEventWithAddressById(numericId);
+
         reset({
-          ...event,
-          date: formatDateForInput(event.date),
+          ...eventWithAddress,
+          event_date: formatDateForInput(eventWithAddress.event_date),
+          end_invitation_date: formatDateForInput(eventWithAddress.end_invitation_date),
+          address: eventWithAddress.address || {}, // pour pré-remplir les champs address
         });
-        setInvitedVolunteers(event.invitedVolunteers || []);
-        setCurrentEvent(event);
-      });
-    }
+
+        setInvitedVolunteers(eventWithAddress.invited_volunteers || []);
+        setCurrentEvent(eventWithAddress);
+        setCurrentStatus(eventWithAddress.status);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchEvent();
   }, [id, reset]);
 
-  const formatDateForInput = (dateString: string) => {
+
+  const formatDateForInput = (dateString?: string) => {
+    if (!dateString) return "";
     return new Date(dateString).toISOString().split("T")[0];
   };
 
    const onCreate = async (data: IEvent) => {
     try {
       if (!user) throw new Error("Utilisateur non authentifié");
-      const eventData = { ...data, invitedVolunteers, creatorId: user.id };
+      const eventData = { ...data, invited_volunteers, created_by_id: user.id };
       console.log("data création", eventData)
-
       const response = await eventService.createEvent(eventData);
       if (response.status === 201) navigate(`/events/${response.data.id}`);
     } catch (error) {
@@ -83,7 +98,7 @@ export default function EventForm() {
   const onUpdate = async (data: IEvent) => {
     try {
       if (!id) return;
-      const eventData = { ...data, invitedVolunteers };
+      const eventData = { ...data, invited_volunteers };
       await eventService.updateEvent(Number(id), eventData);
       navigate(`/events/${id}`);
     } catch (error) {
@@ -105,8 +120,12 @@ export default function EventForm() {
     try {
       if (!id) return;
       const updated = await eventService.publishEvent(Number(id));
-      setCurrentEvent(updated); // mettre à jour le state local
-      reset(updated); // rafraîchir le formulaire
+      setCurrentEvent(updated);
+      setCurrentStatus(updated.status); // mettre à jour le state local
+      reset({
+        ...updated,
+        date: formatDateForInput(updated.date), // garde la même logique que dans useEffect
+    }); // rafraîchir le formulaire
     } catch (error) {
       console.error("Erreur lors de la publication de l’événement", error);
     }
@@ -124,11 +143,12 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Nom</label>
             <input
+              id="name"
               type="text"
               {...register("name", { required: "Le nom est requis" })}
               placeholder="Nom de l'événement"
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
           </div>
@@ -137,10 +157,11 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Description</label>
             <textarea
+             id="description"
               {...register("description", { required: "La description est requise" })}
               placeholder="Description de l'événement"
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>}
           </div>
@@ -149,10 +170,11 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Numéro de la rue</label>
             <input
+              id="street_number"
               type="text"
               {...register("address.street_number", { required: "Le numéro est requis" })}
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.address?.street_number && (
               <p className="text-sm text-red-500 mt-1">{errors.address.street_number.message}</p>
@@ -163,10 +185,11 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Nom de la rue</label>
             <input
+              id="street_name"
               type="text"
               {...register("address.street_name", { required: "Le nom de la rue est requis" })}
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.address?.street_name && (
               <p className="text-sm text-red-500 mt-1">{errors.address.street_name.message}</p>
@@ -177,10 +200,11 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Ville</label>
             <input
+              id="city"
               type="text"
               {...register("address.city", { required: "La ville est requise" })}
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.address?.city && (
               <p className="text-sm text-red-500 mt-1">{errors.address.city.message}</p>
@@ -191,10 +215,11 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Code postal</label>
             <input
+              id="zip_code"
               type="text"
               {...register("address.zip_code", { required: "Le code postal est requis" })}
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.address?.zip_code && (
               <p className="text-sm text-red-500 mt-1">{errors.address.zip_code.message}</p>
@@ -206,42 +231,75 @@ export default function EventForm() {
           <div>
             <label className="block text-sm font-medium text-gray-900">Date</label>
             <input
+              id="date"
               type="date"
-              {...register("date", { required: "La date est requise" })}
+              {...register("event_date", { required: "La date est requise" })}
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
-            {errors.date && <p className="text-sm text-red-500 mt-1">{errors.date.message}</p>}
+            {errors.event_date && <p className="text-sm text-red-500 mt-1">{errors.event_date.message}</p>}
           </div>
 
           {/* Volontaires nécessaires */}
           <div>
             <label className="block text-sm font-medium text-gray-900">Nombre de volontaires nécessaires</label>
             <input
+              id="volunteers_needed"
               type="number"
               {...register("volunteers_needed", {
                 required: "Ce champ est requis",
                 min: { value: 1, message: "Minimum 1 volontaire" },
               })}
               className="mt-1 block w-full border rounded-md px-3 py-2"
-              disabled={currentEvent?.status === "PUBLISHED"}
+              disabled={currentStatus === "published"}
             />
             {errors.volunteers_needed && (
               <p className="text-sm text-red-500 mt-1">{errors.volunteers_needed.message}</p>
             )}
           </div>
 
-        {/* Volontaires invités (avec champ caché pour RHF) */}
-        <div className="flex flex-col">
+          {/* Max Participants */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900">Nombre maximum de participants</label>
+            <input
+              id="max_participants"
+              type="number"
+              {...register("max_participants", {
+                required: "Le nombre de participants est requis",
+                min: { value: 1, message: "Doit être au moins 1" }
+              })}
+              placeholder="Nombre maximum de participants"
+              className="mt-1 block w-full border rounded-md px-3 py-2"
+              disabled={currentStatus === "published"}
+            />
+            {errors.max_participants && <p className="text-sm text-red-500 mt-1">{errors.max_participants.message}</p>}
+          </div>
+
+          {/* End Invitation Date */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900">Date de fin des invitations</label>
+            <input
+              id="end_invitation_date"
+              type="date"
+              {...register("end_invitation_date", { required: "La date de fin d'invitation est requise" })}
+              className="mt-1 block w-full border rounded-md px-3 py-2"
+              disabled={currentStatus === "published"}
+            />
+            {errors.end_invitation_date && <p className="text-sm text-red-500 mt-1">{errors.end_invitation_date.message}</p>}
+          </div>
+
+          {/* Volontaires invités (avec champ caché pour RHF) */}
+          <div className="flex flex-col">
 
             {/* Bouton pour ouvrir la modale */}
-            {currentEvent?.status !== "PUBLISHED" && (
+            {currentStatus !== "published" && (
                 <>
                   <label className="flex justify-center text-sm font-medium text-gray-900 mb-2">
                     Inviter des volontaires
                   </label>
 
                   <button
+                  id="invite-volunteers"
                     type="button"
                     onClick={() => setShowModal(true)}
                     className="custom-button flex items-center justify-center"
@@ -253,8 +311,9 @@ export default function EventForm() {
 
             {/* Champ caché pour RHF */}
             <input
+              id="invited_volunteers"
               type="hidden"
-              {...register("invitedVolunteers", {
+              {...register("invited_volunteers", {
                 required: "Vous devez inviter au moins un volontaire.",
                 validate: (value) =>
                   value && value.length > 0 || "Vous devez inviter au moins un volontaire.",
@@ -262,22 +321,22 @@ export default function EventForm() {
             />
 
             {/* Affichage des volontaires sélectionnés */}
-            {invitedVolunteers.length > 0 && (
+            {invited_volunteers.length > 0 && (
               <ul className="mt-2 list-disc list-inside text-sm text-gray-700">
                 {volunteers
-                  .filter((v) => invitedVolunteers.includes(v.id))
+                  .filter((v) => invited_volunteers.includes(v.id))
                   .map((volunteer) => (
                     <li key={volunteer.id}>
-                      {volunteer.firstname} {volunteer.lastname}
+                      {volunteer.first_name} {volunteer.last_name}
                     </li>
                   ))}
               </ul>
             )}
 
             {/* Erreur si aucun volontaire sélectionné */}
-            {errors.invitedVolunteers && (
+            {errors.invited_volunteers && (
               <p className="text-sm text-red-500 mt-1">
-                {errors.invitedVolunteers.message}
+                {errors.invited_volunteers.message}
               </p>
             )}
 
@@ -285,13 +344,13 @@ export default function EventForm() {
               {showModal && (
                 <VolunteerModal
                   volunteers={volunteers}
-                  selectedIds={invitedVolunteers}
+                  selectedIds={invited_volunteers}
                   onClose={() => setShowModal(false)}
                   onConfirm={(selected) => {
                     const selectedIds = selected.map(v => v.id);
                     setInvitedVolunteers(selectedIds);
-                    setValue("invitedVolunteers", selectedIds);
-                    trigger("invitedVolunteers");
+                    setValue("invited_volunteers", selectedIds);
+                    trigger("invited_volunteers");
                     setShowModal(false);
                   }}
                 />
@@ -300,7 +359,7 @@ export default function EventForm() {
 
           <div className="flex justify-center pt-4 space-x-4">
             {/* Si pas publié → on peut éditer */}
-            {isEditing && currentEvent?.status !== "PUBLISHED" && (
+            {isEditing && currentStatus !== "published" && (
               <>
                 <button type="submit" className="custom-button">
                   Mettre à jour
@@ -316,13 +375,14 @@ export default function EventForm() {
             )}
 
             {/* Si publié → on ne peut plus modifier, juste supprimer */}
-            {isEditing && currentEvent?.status === "PUBLISHED" && (
+            {isEditing && currentStatus === "published" && (
               <p className="text-sm text-gray-600 italic">Cet événement est publié et ne peut plus être modifié.</p>
             )}
 
             {/* Supprimer est toujours dispo en édition */}
             {isEditing && (
               <button
+                id="delete-event"
                 type="button"
                 onClick={onDelete}
                 className="bg-red-500 text-white px-4 py-2 rounded-md"
@@ -333,13 +393,16 @@ export default function EventForm() {
 
             {/* En création */}
             {!isEditing && (
-              <button type="submit" className="custom-button">
+              <button
+                id="create-event"
+                type="submit"
+                className="custom-button">
                 Créer
               </button>
             )}
           </div>
         </form>
     </div>
-  </div>
+    </div>
   );
 }

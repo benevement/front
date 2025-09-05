@@ -1,12 +1,41 @@
-import axios from 'axios';
-import { useAuthStore } from '../stores/useAuthStore';
+import axios from "axios";
+import { useAuthStore } from "../stores/useAuthStore";
+import { updateStoreWithToken } from "./UserService";
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
-  headers: { 'Content-Type': 'application/json' },
+  baseURL: "http://localhost:3000",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
-// Ajout automatique du token si dispo
+let refreshPromise: Promise<void> | null = null;
+
+export const refreshToken = async () => {
+  if (!refreshPromise) {
+    console.log("[API] Refresh token request sent...");
+    refreshPromise = api
+      .post("/auth/refresh", {}, { withCredentials: true })
+      .then((res) => {
+        console.log("[API] Refresh token response:", res.data);
+        if (res.data?.accessToken) {
+          updateStoreWithToken(res.data?.accessToken);
+        } else {
+          throw new Error("No accessToken in refresh response");
+        }
+      })
+      .catch((err) => {
+        console.log("[API] Refresh failed:", err);
+        useAuthStore.getState().logout();
+        throw err;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+};
+
+// Ajouter l’accessToken automatiquement
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
   if (token) {
@@ -15,27 +44,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercepteur pour gérer expiration
+// Intercepteur réponse pour gérer expiration
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const { refreshToken, setAuth, logout, user } = useAuthStore.getState();
     const originalRequest = error.config;
-
-    if (error.response?.status === 401 && refreshToken && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
       try {
-        const res = await axios.post('http://localhost:3000/auth/refresh', {
-          refresh_token: refreshToken,
-        });
-
-        setAuth(user!, res.data.access_token, res.data.refresh_token);
-
-        originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
+        await refreshToken();
+        const token = useAuthStore.getState().accessToken;
+        if (token) {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+        }
         return api(originalRequest);
       } catch (err) {
-        logout();
+        return Promise.reject(err);
       }
     }
     return Promise.reject(error);

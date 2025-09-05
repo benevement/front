@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserSignInInterface } from "../interfaces/IUser";
-import UserService from '../services/UserService';
+import { UserSignInInterface } from "../../interfaces/IUser";
+import UserService from '../../services/UserService';
 
 export default function SignIn() {
   const {
