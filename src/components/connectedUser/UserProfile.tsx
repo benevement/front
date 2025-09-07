@@ -48,7 +48,7 @@ const UserProfile = () => {
 
     const recAddressData = async () => {
     try {
-      const resp2 = await api.get(`/address/${user?.id}`);
+      const resp2 = await api.get(`/address/p2/${user?.id}`);
       console.log("resp2 : ", resp2)
       return resp2.data;
      
