@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import UserService from '../services/UserService';
+import UserService from '../../services/UserService';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { UserSignupInterface } from "../interfaces/IUser";
+import { UserSignupInterface } from "../../interfaces/IUser";
 
 // commenté suite import UserSignupInterface
 /*

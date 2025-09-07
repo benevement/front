@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserSignInInterface } from "../interfaces/IUser";
-import UserService from '../services/UserService';
-
+import { UserSignInInterface } from "../../interfaces/IUser";
+import UserService from '../../services/UserService';
 
 export default function SignIn() {
   const {
@@ -13,6 +13,9 @@ export default function SignIn() {
 
   const navigate = useNavigate();
   const userService = new UserService();
+  const [loginFailed, setLoginFailed] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
 
   const onSubmit = async (data: UserSignInInterface) => {
     try {
@@ -21,7 +24,8 @@ export default function SignIn() {
       navigate("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
-        console.error(err.message);
+        setLoginFailed(true)
+        setErrorMessage(err.message);
       } else {
         console.error('Erreur inattendue', err);
       }
@@ -96,6 +100,11 @@ export default function SignIn() {
           </div>
         </form>
       </div>
+      {loginFailed && (
+        <div className="mt-4 text-center text-red-600 font-semibold">
+          <p>❌ {errorMessage}</p>
+        </div>
+      )}
     </div>
   );
 }
