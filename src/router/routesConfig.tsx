@@ -55,9 +55,9 @@ export const routesConfig = [
   { path: "/events", element: <EventsList />, allowedRoles: allRoles  },
   { path: "/events/:id/edit", element: <EventForm />, allowedRoles: adminRole  },
   { path: "/events/:id/", element: <EventDetails />, allowedRoles: allRoles  },
-  { path: "/users/:id", element: <UserProfile />, allowedRoles: allRoles  },
+  { path: "/users/profile", element: <UserProfile />, allowedRoles: allRoles  }, // rev 07/09 mda
   { path: "/events/:url_event_id/tasks", element: <VolunteerTask />, allowedRoles: eventMembersRoles },
-  //{ path: "/formtest", element: <FormTest />, allowedRoles: allRoles },
+  
 
   // Pages réservées aux rôles supérieurs
 /*   { path: "/dashboard", element: <Dashboard />, allowedRoles: ["connected_user", "manager", "admin"] },

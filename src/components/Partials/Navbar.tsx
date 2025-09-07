@@ -42,7 +42,8 @@ export default function Navbar({ onToggleMenu, onClose }: NavbarProps) {
               <button
                  onClick={() => {
                   onClose();
-                  navigate(`/users/${user.id}`);
+                  //navigate(`/users/${user.id}`);
+                  navigate(`/users/profile`); // rev 07/09 mda
                 }}
                 className="text-white text-2xl"
               >
