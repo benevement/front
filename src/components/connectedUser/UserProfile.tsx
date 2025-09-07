@@ -1,17 +1,23 @@
+// Revision : 05/09/25
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UserAddressInterface } from "../../interfaces/IUser";
+import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { fakeAddress } from "../../data/fakeAddress";
-import { useAuthStore } from "../../stores/useAuthStore";
+import axios, { AxiosError } from "axios";
+//import { fakeAddress } from "../../data/fakeAddress";
+import { userAddressStore, userStore } from "../../stores/userStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
-import fakeUsers from "../../data/fakeUsers";
-import { useParams } from "react-router-dom";
+//import fakeUsers from "../../data/fakeUsers";
+//import { useParams } from "react-router-dom";
 import UserProfile_adm from "../admin/UserProfile_adm";
 import UserService from "../../services/UserService";
+import { useAuthStore } from "../../stores/useAuthStore";
+import api from "../../services/api";
+
+type UserStorageType = Omit<UserInterface, 'password'>; // TODO: doublon des types dans userStores.ts ??
+type UserStorageType2 = Omit<UserAddressInterface, 'password'>;
 
 
 const UserProfile = () => {
@@ -19,27 +25,96 @@ const UserProfile = () => {
   const us = new UserService();
 
   // variables d'authentifications tirées du store
-  const role = useAuthStore((state) => (state.user?.role));
-  // TODO: faire des essais avec le store
+  //const role = useAuthStore((state) => (state.user?.role));
+  const authUserStored = useAuthStore((state) => (state.user));
+  const { user } = useAuthStore();
+  const setUser = userStore((state) => state.setUser)
+  const setUserAddress = userAddressStore((state) => state.setUserAddress)
+  const userAddress = userAddressStore((state) => state.userAddress)
 
-  //const role: string = "admin";       // pour les tests en fonction du rôle
+  const recUserData = async () => {
+    try {
+      const resp = await api.get(`/users/${user?.id}`);
+      console.log("resp : ", resp)
+      return resp.data;
+      
+    }
+    catch (error) {
+      const axiosError = error as AxiosError;
+      console.log("Erreur inconnue : ", error);
+      console.log("axiosError : ", axiosError.message);
+    }
+  }
+
+    const recAddressData = async () => {
+    try {
+      const resp2 = await api.get(`/address/${user?.id}`);
+      console.log("resp2 : ", resp2)
+      return resp2.data;
+     
+    }
+    catch (error2) {
+      const axiosError = error2 as AxiosError;
+      console.log("Erreur inconnue : ", error2);
+      console.log("axiosError : ", axiosError.message);
+    }
+  }
+
+
+  const [userStorage, setUserStorage] = useState<UserStorageType>({
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor"
+  });
+  const [userAddressStorage, setUserAddressStorage] = useState<UserStorageType2>({
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor", user_id: 0, zip_code:"", street_number: "", street_name: "", city: ""
+  });
+
+  const assignUserStorage = async () => {
+    try {
+      const rud = await recUserData();
+      console.log("rud : ", rud);
+      const adr = await recAddressData();
+      console.log("adr : ", adr);
+      const rudadr = {...rud, ...adr}
+      console.log("T1");
+      if (rud.id != 0 && adr) {
+        console.log("T2");
+        //setUserStorage(rud);
+         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
+        setUserAddressStorage(adr);
+        setUser(rud); // on set le store Zustand
+        setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
+        console.log("T2B");
+      }
+
+    }
+    catch (error) {
+      console.log("error : ", error);
+    }
+  }
+
+  useEffect(() => {
+    console.log("T3 : useEffect");
+    assignUserStorage();
+  }, [user])
+
+
   let screenTitle = null;
-  if (role === "admin") {screenTitle = <UserProfile_adm />} 
+  if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
   // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
-  const isVolunteer = role && role == "volunteer" ? true : false;
-  const isAdmin = role && role === "admin" ? true : false;
+  const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
+  const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
   //const userThis: UserInterface = fakeUsers[id];
 
-  const { id } = useParams();
-  const profileId = id ? Number(id) : 0;
-  const fakeUser = fakeUsers.find((u) => (u.id === profileId));
+
+  const profileId = authUserStored?.id ? Number(authUserStored.id) : 0;
+  //const fakeUser = fakeUsers.find((u) => (u.id === profileId));
   // attribution d'une adresse fake => devra être retournée + tard par une requête SQL join
   //  pour avoir l'adresse correspondant au user
-  const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
-
+  //const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
+  //const [userAddress, setUserAddress] = useState();
 
   const {
     register,
@@ -72,15 +147,16 @@ const UserProfile = () => {
 
   function imageProfileUrl(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
-    console.log("photoUrl : ", photoUrl);
+    //console.log("photoUrl : ", photoUrl);
     return photoUrl;
   }
 
   const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
-    let photo = imageProfileUrl(fakeUser?.id || 0);
-    console.log("fakeUser.id : ", fakeUser?.id);
+    let photo = imageProfileUrl(userAddressStorage?.id || 0);
+    //console.log("fakeUser.id : ", fakeUser?.id);
+    console.log("userAddressStorage?.id : ",userAddressStorage.id )
 
     const imageLoad = async () => {
       try {
@@ -91,15 +167,15 @@ const UserProfile = () => {
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
-          console.log(`En-tête content-length non trouvée`);
+          //console.log(`En-tête content-length non trouvée`);
           photo = "/images/UserProfile/colomb-82.png";
         }
         setUrlPhotoView(photo);
-        console.log("photo : ", photo);
+        //console.log("photo : ", photo);
       } catch (error) {
         console.log("erreur dans l'adresse de l'image : ", error);
       }
-      console.log(`photoView :  ${urlPhotoView}`);
+      //console.log(`photoView :  ${urlPhotoView}`);
     };
     imageLoad();
   }, []);
@@ -110,7 +186,7 @@ const UserProfile = () => {
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-2 border-blue-500">
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-2 border-amber-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            
+
             {isAdmin && screenTitle}
 
             <section id="sectionTop" className="h-1/3 grid sm:grid-cols-5">
@@ -133,7 +209,7 @@ const UserProfile = () => {
                     id="last_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder={fakeUser?.last_name || " Nom"}
+                    placeholder={userAddress?.last_name || " Nom"}
                     {...register("last_name", {
                       required: "Le nom est obligatoire.",
                     })}
@@ -160,7 +236,7 @@ const UserProfile = () => {
                     id="first_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder={fakeUser?.first_name || " Prénom"}
+                    placeholder={userAddress?.first_name || " Prénom"}
                     {...register("first_name", { required: "Champ requis." })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
@@ -185,7 +261,7 @@ const UserProfile = () => {
                     id="birthdate"
                     type="date"
 
-                    placeholder={fakeUser?.birthdate || " Date de naissance"}
+                    placeholder={userAddress?.birthdate || " Date de naissance"}
                     {...register("birthdate", {
                       valueAsDate: true,
                       required: false,
@@ -210,7 +286,7 @@ const UserProfile = () => {
                 <div className="grid grid-col-5 col-span-5 text-sm justify-right">
                   {" "}
                   {/*   <BOUTON>   */}
-                  {!isAdmin && <button type="submit" className="custom-button paddingButton2" > chang. Photo </button> }
+                  {!isAdmin && <button type="submit" className="custom-button paddingButton2" > chang. Photo </button>}
 
                 </div>
               </div>
@@ -366,7 +442,7 @@ const UserProfile = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      placeholder={fakeUser?.email || " Email"}
+                      placeholder={userAddressStorage?.email || " Email"}
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}

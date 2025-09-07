@@ -1,12 +1,11 @@
+const { CYPRESS_URL_BASE } = require("./connection.cy")
+
 describe('Should do something', () => {
 
   beforeEach(() => {
     cy.visit('http://localhost:5173/formtest')
   })
 
-  it('should connect to a site', () => {
-    cy.visit('http://localhost:5173/formtest')
-  })
 
   it("should verify various stuff", () => {
     cy.contains(/[Nn]ame/).should('exist')

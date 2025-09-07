@@ -3,7 +3,7 @@ import api from "../services/api";
 import { useEffect, useState } from "react";
 import { UserInterfaceBdd } from "../interfaces/IUser";
 //import fakeUsers from "../data/fakeUsers";
-import { useAuthStore2 } from "../stores/useAuthStore2";
+import { userStore } from "../stores/userStore";
 
 interface Idata {
   username: string;
@@ -44,7 +44,7 @@ function FormTest() {
 
 
   // utilisation du Store (useAuthStore2)
-  const { user, connection_date, setUser, getAge } = useAuthStore2();
+  const { user, connection_date, setUser, getAge } = userStore();
 
 
   const handleList = async () => {

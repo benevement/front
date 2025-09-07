@@ -13,7 +13,7 @@ const HomePageLiens = () => {
       <div className="mb-10 pb-10 leading-10">
         <ul className="list-disc m-3 pl-3">
           <li>
-            <Link to="/users/89" className="activeLink px-3 bg-blue-200/50 hover:underline">Ecran "Profil utilisateur"</Link>
+            <Link to="/users/profile" className="activeLink px-3 bg-blue-200/50 hover:underline">Ecran "Profil utilisateur"</Link>
           </li>
           <li>
             <Link to="/events/3/tasks" className="activeLink px-3 bg-blue-200/50 hover:underline">Ecran "Tasks" pour un bénévole</Link>

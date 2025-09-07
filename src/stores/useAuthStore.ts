@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { IUser } from "../interfaces/IUser";
 import { decodeToken } from "../interfaces/IJwtPayload";
-import { RoleType } from "../../../back/generated/prisma/index";
+//import { RoleType } from "../../../back/generated/prisma/index";
+import { roleType } from '../interfaces/IUser';
 
 type AuthState = {
   user: IUser | null;
@@ -23,11 +24,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     const user: IUser = {
       id: decoded.sub,
       email: decoded.email,
-      role: decoded.role as RoleType,
+      role: decoded.role as roleType,
       first_name: decoded.first_name ?? "",
       last_name: decoded.last_name ?? "",
       phone_number: decoded.phone_number ?? "",
-      adress: decoded.address_id ?? "",
+      address: decoded.address_id ?? "",
     };
 
     // mise à jour du store
