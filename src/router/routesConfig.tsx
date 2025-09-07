@@ -21,8 +21,13 @@ import FormTest from "../pages/FormTest";
 import ManagerPanel from "./pages/ManagerPanel";
 import AdminPanel from "./pages/AdminPanel"; */
 import GestionRoles from '../components/admin/GestionRoles';
-import RefreshTest from './test-refresh';
-import TokenStatus from './tokenStatus';
+
+
+// TODO: que faire des 2 lignes ?
+//import RefreshTest from './test-refresh';
+//import TokenStatus from './tokenStatus';
+
+
 import Homepage from '../pages/Homepage';
 
 
@@ -39,8 +44,10 @@ export const routesConfig = [
   { path: "/signin", element: <SignIn />, allowVisitor: true },
   { path: "/signup", element: <SignUp />, allowVisitor: true },
   { path: "/formtest", element: <FormTest />, allowVisitor: true }, // pour tests - temporaire.
-  { path: "/test-refresh", element: <RefreshTest />, allowVisitor: true },
-  { path: "/tokenStatus", element: <TokenStatus />, allowVisitor: true },
+
+  // TODO: que faire des 2 lignes ?
+  //{ path: "/test-refresh", element: <RefreshTest />, allowVisitor: true },
+  //{ path: "/tokenStatus", element: <TokenStatus />, allowVisitor: true },
 
 
   // Pages réservées aux utilisateurs connectés
