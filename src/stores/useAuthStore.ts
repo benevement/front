@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       first_name: decoded.first_name ?? "",
       last_name: decoded.last_name ?? "",
       phone_number: decoded.phone_number ?? "",
-      address: decoded.address_id ?? "",
+      adress: decoded.address_id ?? "",
     };
 
     // mise à jour du store
