@@ -1,8 +1,8 @@
 import { roleType } from '../interfaces/IUser';
 
 // Pages visiteurs
-/* import HomePageLiens from "../pages/HomePageLiens";
- */
+import HomePageLiens from "../pages/HomePageLiens";
+
 
 import SignIn from "../components/Connexion/SignIn";
 import SignUp from "../components/Connexion/SignUp";
