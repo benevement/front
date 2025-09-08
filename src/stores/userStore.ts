@@ -1,21 +1,21 @@
 // revision : 05/09
 
 import { create } from "zustand/react";
-import UserInterface, { UserAddressInterface } from "../interfaces/IUser";
+import { UserAddressInterface, UserStorageType } from "../interfaces/IUser";
 import {persist} from "zustand/middleware"; 
 import {agecalc} from "../services/UserService";
 
-type UserStoreType = Omit<UserInterface, "password">;
-type UserAddressStoreType = Omit<UserAddressInterface, "password">;
+//export type UserStoreType = Omit<UserInterface, "password">;
+export type UserAddressStoreType = Omit<UserAddressInterface, "password">;
 
 
 interface IUserStoreState {
   // State
-  user: UserStoreType;
+  user: UserStorageType;
   connection_date: Date;
 
   // Setters
-  setUser: (user: UserStoreType) => void;
+  setUser: (user: UserStorageType) => void;
   setConnection_date: (connection_date: Date) => void; 
   getAge: () => number;
 }
@@ -32,14 +32,12 @@ export const userStore = create<IUserStoreState>()(
           setConnection_date: (connection_date) => set((state) => ({ connection_date: {...state.connection_date, connection_date}})),
           getAge: () => agecalc(new Date(get().user.birthdate)),
     }),
-    { name: 'user storage',}, // nom unique pour le stockage
+    { name: 'userStorage',}, // nom unique pour le stockage
   )  
 );
 
 // avec getAge, l'age n'est pas directement stockée dans le store (comme c'est persistant, l'âge 1 jour + tard pourrait être différent)
 // l'âge est calculé à la volée, à chaque accès au store.
-
-
 //  age: agecalc(new Date(user.birthdate)) // recalcule l'age quand le user change.
 
 

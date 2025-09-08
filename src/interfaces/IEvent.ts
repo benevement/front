@@ -13,6 +13,7 @@ export interface IEvent {
   status: string;
   max_participants: number;
   end_invitation_date: string;
+  address_id?: number;
 }
 
 export type EventStatusType = 'created'|'published'|'canceled'|'finished'

@@ -61,7 +61,8 @@ export default class EventService {
   updateEvent = async (eventId: number, data: IEvent) => {
 
     // Surement à modifier postérieurement en fonction des éléments qui seront présents en back
-    const { created_by_id, id, addressId, creator, ...updatedData } = data;
+    //const { created_by_id, id, addressId, creator, ...updatedData } = data;
+    const { created_by_id, id, address_id, ...updatedData } = data;
 
     const formattedData = {
       ...updatedData,

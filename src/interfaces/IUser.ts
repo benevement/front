@@ -1,6 +1,7 @@
 import { AddressInterface } from "./IAddress";
 
 export type roleType =  "admin" | "volunteer" | "connected_user";
+export type RoleType =  "admin" | "volunteer" | "connected_user";
 export type roleType2 = "admin" | "volunteer" | "connected_user" | "visitor";
 
 export interface UserSignInInterface {
@@ -15,9 +16,10 @@ export default interface UserInterface extends UserSignInInterface, UserSignupIn
     id: number;
     first_name: string; // prenom
     last_name: string; // nom
-    birthdate: string;
+    birthdate?: string;
     avatar?: string; // URL de la photo utilisateur
-    role: roleType2;
+    role: roleType;
+    address_id?: number;
 }
 
 export interface UserAddressInterface extends UserInterface, AddressInterface {
@@ -37,7 +39,22 @@ export interface IAuthState {
     logout: () => void;
   }
 
-export interface IUser {
+
+  export interface IUser {
+    id: number;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: roleType;
+    address_id?: number;
+    phone_number?: string;
+  }
+
+  export interface IUserStorage extends IUser {
+    birthdate?: Date;
+  } 
+
+export interface IUser2 {
   id: number;
   email: string;
   first_name: string;
@@ -47,6 +64,19 @@ export interface IUser {
   phone_number?: string;
 }
 
+
+
+    /*
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        last_name: true,
+        first_name: true,
+        birthdate: true,
+        phone_number: true,
+      },
+    */
 
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

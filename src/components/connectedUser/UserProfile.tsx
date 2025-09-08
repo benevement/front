@@ -1,23 +1,18 @@
-// Revision : 05/09/25
+// Revision : 08/09/25
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
+import { UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
-//import { fakeAddress } from "../../data/fakeAddress";
-import { userAddressStore, userStore } from "../../stores/userStore";
+import { UserAddressStoreType, userAddressStore, userStore } from "../../stores/userStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
-//import fakeUsers from "../../data/fakeUsers";
-//import { useParams } from "react-router-dom";
 import UserProfile_adm from "../admin/UserProfile_adm";
 import UserService from "../../services/UserService";
 import { useAuthStore } from "../../stores/useAuthStore";
-import api from "../../services/api";
-
-type UserStorageType = Omit<UserInterface, 'password'>; // TODO: doublon des types dans userStores.ts ??
-type UserStorageType2 = Omit<UserAddressInterface, 'password'>;
+//import { recAddressData, recUserData } from "../../services/api/axiosProfile"
+import axios from "axios";
+import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
 
 
 const UserProfile = () => {
@@ -27,65 +22,27 @@ const UserProfile = () => {
   // variables d'authentifications tirées du store
   //const role = useAuthStore((state) => (state.user?.role));
   const authUserStored = useAuthStore((state) => (state.user));
-  const { user } = useAuthStore();
+  
   const setUser = userStore((state) => state.setUser)
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
 
-  const recUserData = async () => {
-    try {
-      const resp = await api.get(`/users/p2/${user?.id}`);
-      console.log("resp : ", resp)
-      return resp.data;
-      
-    }
-    catch (error) {
-      const axiosError = error as AxiosError;
-      console.log("Erreur inconnue : ", error);
-      console.log("axiosError : ", axiosError.message);
-    }
-  }
-
-    const recAddressData = async () => {
-    try {
-      const resp2 = await api.get(`/address/p2/${user?.id}`);
-      console.log("resp2 : ", resp2)
-      return resp2.data;
-     
-    }
-    catch (error2) {
-      const axiosError = error2 as AxiosError;
-      console.log("Erreur inconnue : ", error2);
-      console.log("axiosError : ", axiosError.message);
-    }
-  }
-
-
-  const [userStorage, setUserStorage] = useState<UserStorageType>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor"
-  });
-  const [userAddressStorage, setUserAddressStorage] = useState<UserStorageType2>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor", user_id: 0, zip_code:"", street_number: "", street_name: "", city: ""
+  const [userAddressStorage, setUserAddressStorage] = useState<UserAddressStoreType>({
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "connected_user", user_id: 0, zip_code: "", street_number: "", street_name: "", city: ""
   });
 
   const assignUserStorage = async () => {
     try {
-      const rud = await recUserData();
-      console.log("rud : ", rud);
-      const adr = await recAddressData();
-      console.log("adr : ", adr);
-      const rudadr = {...rud, ...adr}
-      console.log("T1");
+      const rud = await lStoreUserData(authUserStored);
+      const adr = await lStoreAddressData(authUserStored);
+      const rudadr = { ...rud, ...adr }
       if (rud.id != 0 && adr) {
-        console.log("T2");
         //setUserStorage(rud);
-         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
+        // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
         setUserAddressStorage(adr);
         setUser(rud); // on set le store Zustand
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
-        console.log("T2B");
       }
-
     }
     catch (error) {
       console.log("error : ", error);
@@ -93,10 +50,9 @@ const UserProfile = () => {
   }
 
   useEffect(() => {
-    console.log("T3 : useEffect");
     assignUserStorage();
-  }, [user])
-
+  //}, [user])      // user déplacé vers services/api/axioProfile.ts
+  },[us.updateUserPut.call])
 
   let screenTitle = null;
   if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
@@ -106,21 +62,10 @@ const UserProfile = () => {
   const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
   const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
-  //const userThis: UserInterface = fakeUsers[id];
+  //const profileId = authUserStored?.id ? Number(authUserStored.id) : 0;
 
 
-  const profileId = authUserStored?.id ? Number(authUserStored.id) : 0;
-  //const fakeUser = fakeUsers.find((u) => (u.id === profileId));
-  // attribution d'une adresse fake => devra être retournée + tard par une requête SQL join
-  //  pour avoir l'adresse correspondant au user
-  //const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
-  //const [userAddress, setUserAddress] = useState();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<UserAddressInterface>({
+  const { register, handleSubmit, formState: { errors }, } = useForm<UserAddressInterface>({
     defaultValues: {
       id: 0,
       first_name: "",
@@ -155,8 +100,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     let photo = imageProfileUrl(userAddressStorage?.id || 0);
-    //console.log("fakeUser.id : ", fakeUser?.id);
-    console.log("userAddressStorage?.id : ",userAddressStorage.id )
+    console.log("userAddressStorage?.id : ", userAddressStorage.id)
 
     const imageLoad = async () => {
       try {
@@ -167,15 +111,12 @@ const UserProfile = () => {
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
-          //console.log(`En-tête content-length non trouvée`);
           photo = "/images/UserProfile/colomb-82.png";
         }
         setUrlPhotoView(photo);
-        //console.log("photo : ", photo);
       } catch (error) {
         console.log("erreur dans l'adresse de l'image : ", error);
       }
-      //console.log(`photoView :  ${urlPhotoView}`);
     };
     imageLoad();
   }, []);
@@ -183,8 +124,8 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-2 border-blue-500">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-2 border-amber-100">
+      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-0 border-blue-500">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-0 border-amber-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
             {isAdmin && screenTitle}

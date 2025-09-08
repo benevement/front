@@ -1,13 +1,13 @@
 // services/userService.ts
 import api, { refreshToken } from './api';
-import { UserAddressInterface } from '../interfaces/IUser';
+import { RoleType, UserAddressInterface } from '../interfaces/IUser';
 import { useEffect } from 'react';
 import { useAuthStore } from "../stores/useAuthStore";
 import { decodeToken } from "../interfaces/IJwtPayload";
 import { IUser } from "../interfaces/IUser";
 //import { RoleType } from "../../../back/generated/prisma/index";
 
-import { roleType } from '../interfaces/IUser';
+
 
 
 /* export interface IUser {
@@ -58,7 +58,7 @@ export const updateStoreWithToken = (accessToken: string) => {
     id: decoded.sub,
     email: decoded.email,
     //role: decoded.role as RoleType,
-    role: decoded.role as roleType,
+    role: decoded.role as RoleType,
     first_name: decoded.first_name ?? "",
     last_name: decoded.last_name ?? "",
     phone_number: decoded.phone_number ?? "",
