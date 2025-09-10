@@ -19,10 +19,10 @@ const HomePageLiens = () => {
             <Link to="/events/3/tasks" className="activeLink px-3 bg-blue-200/50 hover:underline">Ecran "Tasks" pour un bénévole</Link>
           </li>
           <li>
-            <Link to="/signin" className="activeLink px-3 bg-blue-200/50 hover:underline">User LOGIN (signin)</Link>
+            <Link to="/signin" className="activeLink px-3 bg-green-300/50 hover:underline">User LOGIN (signin)</Link>
           </li>
           <li>
-            <Link to="/signup" className="activeLink px-3 bg-blue-200/50 hover:underline">Enregistrement Utilisateur (register/signup)</Link>
+            <Link to="/signup" className="activeLink px-3 bg-green-400/50 hover:underline">Enregistrement Utilisateur (register/signup)</Link>
           </li>
           <li>
             <Link to="/formtest" className="activeLink px-3 bg-blue-200/50 hover:underline">formtest</Link>

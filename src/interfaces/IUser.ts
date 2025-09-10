@@ -1,58 +1,58 @@
 import { AddressInterface } from "./IAddress";
 
-export type roleType =  "admin" | "volunteer" | "connected_user";
-export type RoleType =  "admin" | "volunteer" | "connected_user";
+export type roleType = "admin" | "volunteer" | "connected_user";
+export type RoleType = "admin" | "volunteer" | "connected_user";
 export type roleType2 = "admin" | "volunteer" | "connected_user" | "visitor";
 
 export interface UserSignInInterface {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
-export interface UserSignupInterface extends UserSignInInterface{
-    confirmPassword?: string;
-    phone_number?: string;
+export interface UserSignupInterface extends UserSignInInterface {
+  confirmPassword?: string;
+  phone_number?: string;
 }
 export default interface UserInterface extends UserSignInInterface, UserSignupInterface {
-    id: number;
-    first_name: string; // prenom
-    last_name: string; // nom
-    birthdate?: string;
-    avatar?: string; // URL de la photo utilisateur
-    role: roleType;
-    address_id?: number;
+  id: number;
+  first_name: string; // prenom
+  last_name: string; // nom
+  birthdate?: string;
+  avatar?: string; // URL de la photo utilisateur
+  role: roleType;
+  address_id?: number;
 }
 
 export interface UserAddressInterface extends UserInterface, AddressInterface {
   // réunion des interfaces AddressInterface et UserInterface (pour utilisation dans écran UserProfile)
 }
 
-export interface UserInterfaceBdd extends UserInterface{
+export interface UserInterfaceBdd extends UserInterface {
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface IAuthState {
-    user: { email: string; role: roleType } | null;
-    //user : Pick<UserInterface, "email"|"role"> | null     // autre écriture possible
-    token: string | null;
-    setAuth: (user: IAuthState['user'], token: string) => void;
-    logout: () => void;
-  }
+  user: { email: string; role: roleType } | null;
+  token: string | null;
+  setAuth: (user: IAuthState['user'], token: string) => void;
+  logout: () => void;
+}
 
 
-  export interface IUser {
-    id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
-    role: roleType;
-    address_id?: number;
-    phone_number?: string;
-  }
+export interface IUser {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: roleType;
+  address_id?: number;
+  phone_number?: string;
+}
 
-  export interface IUserStorage extends IUser {
-    birthdate?: Date;
-  } 
+export interface IUserStorage extends IUser {
+  birthdate?: string;
+}
+export type UserStorageType = Omit<IUser, "role" | "address_id"> & { birthdate?: string }
 
 export interface IUser2 {
   id: number;
@@ -66,17 +66,17 @@ export interface IUser2 {
 
 
 
-    /*
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        last_name: true,
-        first_name: true,
-        birthdate: true,
-        phone_number: true,
-      },
-    */
+/*
+  select: {
+    id: true,
+    email: true,
+    role: true,
+    last_name: true,
+    first_name: true,
+    birthdate: true,
+    phone_number: true,
+  },
+*/
 
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

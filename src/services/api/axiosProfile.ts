@@ -1,7 +1,8 @@
 import { AxiosError } from "axios";
 import api from "../api";
-import { useAuthStore } from "../../stores/useAuthStore";
+//import { useAuthStore } from "../../stores/useAuthStore";
 import IUser, { IUserStorage } from "../../interfaces/IUser";
+import { UserAddressStoreType } from "../../stores/userStore";
 
 
 // récup user (id, mail) à partir du store d'authentification
@@ -9,25 +10,8 @@ import IUser, { IUserStorage } from "../../interfaces/IUser";
 
 //export const recUserData = async (user: IUser|null): Promise<IUserStorage|undefined> => {
   export const lStoreUserData = async (user: IUser|null): Promise<IUserStorage|undefined> => {
+    // on va chercher l'ensemble des données utilisateur à partir de de l'id du user authentifié (useAuthStore)
 
-    /*
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        last_name: true,
-        first_name: true,
-        birthdate: true,
-        phone_number: true,
-      },
-    */
-    
-/*
-    if (!user?.id) {
-        console.warn("Aucun user connecté, requête annulée.")
-        return null;
-    }
-*/
     try {
       const resp = await api.get(`/users/p2/${user?.id}`);
       console.log("resp : ", resp)
@@ -42,7 +26,7 @@ import IUser, { IUserStorage } from "../../interfaces/IUser";
   }
 
     export const lStoreAddressData = async (user: IUser) => {
-
+  // retourne l'adresse correspondant au user via la clef user_id de Address.
     try {
       const resp2 = await api.get(`/address/p2/${user?.id}`);
       console.log("resp2 : ", resp2)

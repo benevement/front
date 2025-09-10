@@ -3,7 +3,7 @@
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UserAddressInterface } from "../../interfaces/IUser";
+import { IUser, UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import { UserAddressStoreType, userAddressStore, userStore } from "../../stores/userStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
@@ -27,20 +27,22 @@ const UserProfile = () => {
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
 
+  // 10/09 : ne pas faire afficher le role dans le userStorage.
   const [userAddressStorage, setUserAddressStorage] = useState<UserAddressStoreType>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "connected_user", user_id: 0, zip_code: "", street_number: "", street_name: "", city: ""
+    //id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "connected_user", user_id: 0, zip_code: "", street_number: "", street_name: "", city: "",
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "", user_id: 0, zip_code: "", street_number: "", street_name: "", city: "",
   });
 
-  const assignUserStorage = async () => {
+  const assignUserStorage = async (): Promise<void> => {
     try {
       const rud = await lStoreUserData(authUserStored);
       const adr = await lStoreAddressData(authUserStored);
       const rudadr = { ...rud, ...adr }
-      if (rud.id != 0 && adr) {
+      if (rud && rud.id != 0 && adr) {
         //setUserStorage(rud);
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
         setUserAddressStorage(adr);
-        setUser(rud); // on set le store Zustand
+        //setUser(rud); // on set le store Zustand
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
       }
     }
@@ -87,8 +89,11 @@ const UserProfile = () => {
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
   //  la compatibilité avec SubmitHandler<UserInterface>
 
-  const onSubmit: SubmitHandler<UserAddressInterface> = (data) =>
+  const onSubmit: SubmitHandler<UserAddressInterface> = (data) => {
     console.log(data);
+    us.updateUserPut(userAddress.id,data)
+
+  }
 
   function imageProfileUrl(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
@@ -436,7 +441,8 @@ const UserProfile = () => {
               </div>
 
               <div className="flex flex-col justify-around col-span-2 ml-2">
-                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}>
+                {/* <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}> */}
+                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(onSubmit)}>
                   {/*Mettre à jour */}
                   Enregistrer
                 </button>

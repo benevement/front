@@ -57,12 +57,12 @@ export const updateStoreWithToken = (accessToken: string) => {
   const user: IUser = {
     id: decoded.sub,
     email: decoded.email,
-    //role: decoded.role as RoleType,
     role: decoded.role as RoleType,
     first_name: decoded.first_name ?? "",
     last_name: decoded.last_name ?? "",
     phone_number: decoded.phone_number ?? "",
-    address: decoded.address_id ?? "",
+    //address: decoded.address_id ?? "",
+    address_id: decoded.address_id ?? 0,
   };
 
   // On met directement le token et le user dans le store
@@ -154,12 +154,15 @@ export default class UserService {
   // ajout 21/08 pour update profil utilisateur
   // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
   // TODO: voir typage retour de fonction
-  updateUserPut = async (id: number, data: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
+  updateUserPut = async (id: number, userAddress: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
     try {
-      const response = await api.put(`/users/${id}`, data);
+      const response = await api.put(`/users/${id}`, userAddress);
+      console.log("log response dans React L160 : ", response)
       return response.data;
     } catch (error) {
-      console.error(error);
+      console.log(`id dans fonc : ${id}`)
+      console.log(`city dans fonc : ${userAddress.city}`)
+      console.error("erreur dans updateUserPut de UserService.ts : " ,error); 
       throw new Error('Failed to update user');
     }
   };
@@ -176,8 +179,8 @@ export default class UserService {
 }
 
 // calcul de l'age d'un user
-export function agecalc(birthday: Date): number {
-  birthday = new Date(birthday);
-  const age = Number(((Date.now() - birthday.getTime()) / 31536000000).toFixed(0));
+export function agecalc(birthday: string): number {
+  let birthday2 = new Date(birthday);
+  const age = Number(((Date.now() - birthday2.getTime()) / 31536000000).toFixed(0));
   return age;
 }
