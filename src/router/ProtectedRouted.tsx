@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function ProtectedRoute({ allowedRoles = [], allowVisitor = false }: Props) {
-  const user = useAuthStore((state) => state.user);
+  const { user } = useAuthStore();
   const location = useLocation();
 
   // Cas visiteur

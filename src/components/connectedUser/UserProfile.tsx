@@ -1,86 +1,112 @@
+// Revision : 08/09/25
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
 // 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UserAddressInterface } from "../../interfaces/IUser";
+import { IUser, UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { fakeAddress } from "../../data/fakeAddress";
-import { useAuthStore } from "../../stores/useAuthStore";
+import { UserAddressStoreType, userAddressStore, userStore } from "../../stores/userStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
-import fakeUsers from "../../data/fakeUsers";
-import { useParams } from "react-router-dom";
 import UserProfile_adm from "../admin/UserProfile_adm";
 import UserService from "../../services/UserService";
+import { useAuthStore } from "../../stores/useAuthStore";
+//import { recAddressData, recUserData } from "../../services/api/axiosProfile"
+import axios from "axios";
+import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
 
 
 const UserProfile = () => {
 
   const us = new UserService();
+  let flagUpdate: boolean = false;
 
   // variables d'authentifications tirées du store
-  const role = useAuthStore((state) => (state.user?.role));
-  // TODO: faire des essais avec le store
+  //const role = useAuthStore((state) => (state.user?.role));
+  const authUserStored = useAuthStore((state) => (state.user));
 
-  //const role: string = "admin";       // pour les tests en fonction du rôle
+  const setUser = userStore((state) => state.setUser)
+  const setUserAddress = userAddressStore((state) => state.setUserAddress)
+  const userAddress = userAddressStore((state) => state.userAddress)
+
+  // 10/09 : ne pas faire afficher le role dans le userStorage.
+  const [userAddressStorage, setUserAddressStorage] = useState<UserAddressStoreType>({
+    //id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "connected_user", user_id: 0, zip_code: "", street_number: "", street_name: "", city: "",
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "", user_id: 0, zip_code: "", street_number: "", street_name: "", city: "",
+  });
+
+  const assignUserStorage = async (): Promise<void> => {
+    try {
+      const rud = await lStoreUserData(authUserStored);
+      const adr = await lStoreAddressData(authUserStored);
+      const rudadr = { ...rud, ...adr }
+      if (rud && rud.id != 0 && adr) {
+        //setUserStorage(rud);
+        // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
+        setUserAddressStorage(adr); // useState
+        //setUser(rud); // on set le store Zustand
+        setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
+      }
+    }
+    catch (error) {
+      console.log("error : ", error);
+    }
+  }
+
+  useEffect(() => {
+    assignUserStorage();
+    //}, [user])      // user déplacé vers services/api/axioProfile.ts
+  }, [flagUpdate])
+
   let screenTitle = null;
-  if (role === "admin") {screenTitle = <UserProfile_adm />} 
+  if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
   // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
-  const isVolunteer = role && role == "volunteer" ? true : false;
-  const isAdmin = role && role === "admin" ? true : false;
+  const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
+  const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
-  //const userThis: UserInterface = fakeUsers[id];
-
-  const { id } = useParams();
-  const profileId = id ? Number(id) : 0;
-  const fakeUser = fakeUsers.find((u) => (u.id === profileId));
-  // attribution d'une adresse fake => devra être retournée + tard par une requête SQL join
-  //  pour avoir l'adresse correspondant au user
-  const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
+  //const profileId = authUserStored?.id ? Number(authUserStored.id) : 0;
 
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<UserAddressInterface>({
+  const { register, handleSubmit, formState: { errors }, } = useForm<UserAddressInterface>({
     defaultValues: {
       id: 0,
-      first_name: "",
-      last_name: "",
-      email: "",
-      password: "",
-      birthdate: "",
-      avatar: "",
-      role: "connected_user",
-      phone_number: "",
-      confirmPassword: "",
-      zip_code: "",
-      street_number: "",
-      street_name: "",
-      city: "",
+      first_name: userAddress.first_name ?? "",
+      last_name: userAddress.last_name ?? "",
+      email: userAddress.email ?? "",
+      //password: "",
+      birthdate: userAddress.birthdate ?? "",
+      //avatar: "",
+      //role: "connected_user",
+      phone_number: userAddress.phone_number ?? "",
+      //confirmPassword: "",
+      zip_code: userAddress.zip_code ?? "",
+      street_number: userAddress.street_number ?? "",
+      street_name: userAddress.street_name ?? "",
+      city: userAddress.city ?? "",
     },
   });
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
   //  la compatibilité avec SubmitHandler<UserInterface>
 
-  const onSubmit: SubmitHandler<UserAddressInterface> = (data) =>
+  const onSubmit: SubmitHandler<UserAddressInterface> = (data) => {
     console.log(data);
+    us.updateUserPut(userAddress.id, data)
+    flagUpdate = !flagUpdate;
+  }
 
   function imageProfileUrl(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
-    console.log("photoUrl : ", photoUrl);
+    //console.log("photoUrl : ", photoUrl);
     return photoUrl;
   }
 
   const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
-    let photo = imageProfileUrl(fakeUser?.id || 0);
-    console.log("fakeUser.id : ", fakeUser?.id);
+    let photo = imageProfileUrl(userAddressStorage?.id || 0);
+    console.log("userAddressStorage?.id : ", userAddressStorage.id)
 
     const imageLoad = async () => {
       try {
@@ -91,15 +117,12 @@ const UserProfile = () => {
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
-          console.log(`En-tête content-length non trouvée`);
           photo = "/images/UserProfile/colomb-82.png";
         }
         setUrlPhotoView(photo);
-        console.log("photo : ", photo);
       } catch (error) {
         console.log("erreur dans l'adresse de l'image : ", error);
       }
-      console.log(`photoView :  ${urlPhotoView}`);
     };
     imageLoad();
   }, []);
@@ -107,10 +130,10 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-2 border-blue-500">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-2 border-amber-100">
+      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-0 border-blue-500">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-0 border-amber-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            
+
             {isAdmin && screenTitle}
 
             <section id="sectionTop" className="h-1/3 grid sm:grid-cols-5">
@@ -133,7 +156,7 @@ const UserProfile = () => {
                     id="last_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder={fakeUser?.last_name || " Nom"}
+                    placeholder={userAddress?.last_name || " Nom"}
                     {...register("last_name", {
                       required: "Le nom est obligatoire.",
                     })}
@@ -160,7 +183,7 @@ const UserProfile = () => {
                     id="first_name"
                     type="text"
                     // autoComplete="email"
-                    placeholder={fakeUser?.first_name || " Prénom"}
+                    placeholder={userAddress?.first_name || " Prénom"}
                     {...register("first_name", { required: "Champ requis." })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
@@ -185,7 +208,7 @@ const UserProfile = () => {
                     id="birthdate"
                     type="date"
 
-                    placeholder={fakeUser?.birthdate || " Date de naissance"}
+                    placeholder={userAddress?.birthdate || " Date de naissance"}
                     {...register("birthdate", {
                       valueAsDate: true,
                       required: false,
@@ -210,7 +233,7 @@ const UserProfile = () => {
                 <div className="grid grid-col-5 col-span-5 text-sm justify-right">
                   {" "}
                   {/*   <BOUTON>   */}
-                  {!isAdmin && <button type="submit" className="custom-button paddingButton2" > chang. Photo </button> }
+                  {!isAdmin && <button type="submit" className="custom-button paddingButton2" > chang. Photo </button>}
 
                 </div>
               </div>
@@ -366,7 +389,7 @@ const UserProfile = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      placeholder={fakeUser?.email || " Email"}
+                      placeholder={userAddressStorage?.email || " Email"}
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}
@@ -419,7 +442,8 @@ const UserProfile = () => {
               </div>
 
               <div className="flex flex-col justify-around col-span-2 ml-2">
-                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}>
+                {/* <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}> */}
+                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(onSubmit)}>
                   {/*Mettre à jour */}
                   Enregistrer
                 </button>

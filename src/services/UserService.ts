@@ -1,14 +1,21 @@
 // services/userService.ts
-import api from './api';
-import { useAuthStore } from '../stores/useAuthStore';
-import { UserAddressInterface, roleType } from '../interfaces/IUser';
+import api, { refreshToken } from './api';
+import { RoleType, UserAddressInterface } from '../interfaces/IUser';
+import { useEffect } from 'react';
+import { useAuthStore } from "../stores/useAuthStore";
+import { decodeToken } from "../interfaces/IJwtPayload";
+import { IUser } from "../interfaces/IUser";
+//import { RoleType } from "../../../back/generated/prisma/index";
 
-export interface IUser {
+
+
+
+/* export interface IUser {
   id: number;
   email: string;
   role: roleType;
   phone_number?: string;
-}
+} */
 
 export interface LoginInput {
   email: string;
@@ -21,33 +28,79 @@ export interface RegisterInput {
   phone_number?: string;
 }
 
+export const useRestoreSession = () => {
+  const { user } = useAuthStore();
+
+   useEffect(() => {
+    const flag = localStorage.getItem("isAuthenticated") === "true";
+    console.log("flag value", flag)
+
+   const restore = async () => {
+      if (flag && !user) {
+        console.log("[Restore] Restoring session...");
+        try {
+          await refreshToken();
+        } catch (err) {
+          console.log("[Restore] Cannot restore session", err);
+        }
+      }
+    };
+
+    restore();
+  }, [user]);
+};
+
+export const updateStoreWithToken = (accessToken: string) => {
+  const decoded = decodeToken(accessToken);
+  if (!decoded) return;
+
+  const user: IUser = {
+    id: decoded.sub,
+    email: decoded.email,
+    role: decoded.role as RoleType,
+    first_name: decoded.first_name ?? "",
+    last_name: decoded.last_name ?? "",
+    phone_number: decoded.phone_number ?? "",
+    //address: decoded.address_id ?? "",
+    address_id: decoded.address_id ?? 0,
+  };
+
+  // On met directement le token et le user dans le store
+  useAuthStore.setState({
+    accessToken,
+    user,
+    isAuthenticated: true,
+  });
+
+  console.log("nouvel user", user)
+};
+
+
 export default class UserService {
   private store = useAuthStore.getState();
 
-  private setAuth = (user: IUser, token: string) => {
-    this.store.setAuth(user, token);
+  private setAuth = (accessToken: string, ) => {
+    this.store.setAuth(accessToken);
   };
 
   // --- AUTH ---
-  login = async (input: LoginInput): Promise<IUser> => {
+  login = async (input: LoginInput) => {
     try {
-      const response = await api.post<{ access_token: string; user: IUser }>('/auth/login', input);
-      const { user, access_token } = response.data;
-      //console.log("UserService, response.data api.post user/token", response?.data)   // pour tests
-      this.setAuth(user, access_token);
-      return user;
+      const response = await api.post<{ accessToken: string }>('/auth/login', input);
+      const { accessToken } = response.data;
+      this.setAuth(accessToken);
     } catch (error) {
       console.error(error);
       throw new Error('Login failed');
     }
   };
 
-  register = async (input: RegisterInput): Promise<IUser> => {
+  register = async (input: RegisterInput) => {
     try {
-      const response = await api.post<{ access_token: string; user: IUser }>('/auth/register', input);
-      const { user, access_token } = response.data;
-      this.setAuth(user, access_token);
-      return user;
+      const response = await api.post<{ user: IUser, accessToken : string, refreshToken: string }>('/auth/register', input);
+      const { accessToken  } = response.data;
+      this.setAuth( accessToken );
+
     } catch (error) {
       console.error(error);
       throw new Error('Registration failed');
@@ -101,12 +154,15 @@ export default class UserService {
   // ajout 21/08 pour update profil utilisateur
   // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
   // TODO: voir typage retour de fonction
-  updateUserPut = async (id: number, data: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
+  updateUserPut = async (id: number, userAddress: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
     try {
-      const response = await api.put(`/users/${id}`, data);
+      const response = await api.put(`/users/${id}`, userAddress);
+      console.log("log response dans React L160 : ", response)
       return response.data;
     } catch (error) {
-      console.error(error);
+      console.log(`id dans fonc : ${id}`)
+      console.log(`city dans fonc : ${userAddress.city}`)
+      console.error("erreur dans updateUserPut de UserService.ts : " ,error); 
       throw new Error('Failed to update user');
     }
   };
@@ -122,11 +178,9 @@ export default class UserService {
 
 }
 
-
-
 // calcul de l'age d'un user
-export function agecalc(birthday: Date): number {
-  birthday = new Date(birthday);
-  const age = Number(((Date.now() - birthday.getTime()) / 31536000000).toFixed(0));
+export function agecalc(birthday: string): number {
+  let birthday2 = new Date(birthday);
+  const age = Number(((Date.now() - birthday2.getTime()) / 31536000000).toFixed(0));
   return age;
 }
