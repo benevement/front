@@ -18,11 +18,12 @@ import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfi
 const UserProfile = () => {
 
   const us = new UserService();
+  let flagUpdate: boolean = false;
 
   // variables d'authentifications tirées du store
   //const role = useAuthStore((state) => (state.user?.role));
   const authUserStored = useAuthStore((state) => (state.user));
-  
+
   const setUser = userStore((state) => state.setUser)
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
@@ -41,7 +42,7 @@ const UserProfile = () => {
       if (rud && rud.id != 0 && adr) {
         //setUserStorage(rud);
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
-        setUserAddressStorage(adr);
+        setUserAddressStorage(adr); // useState
         //setUser(rud); // on set le store Zustand
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
       }
@@ -53,8 +54,8 @@ const UserProfile = () => {
 
   useEffect(() => {
     assignUserStorage();
-  //}, [user])      // user déplacé vers services/api/axioProfile.ts
-  },[us.updateUserPut.call])
+    //}, [user])      // user déplacé vers services/api/axioProfile.ts
+  }, [flagUpdate])
 
   let screenTitle = null;
   if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
@@ -70,19 +71,19 @@ const UserProfile = () => {
   const { register, handleSubmit, formState: { errors }, } = useForm<UserAddressInterface>({
     defaultValues: {
       id: 0,
-      first_name: "",
-      last_name: "",
-      email: "",
-      password: "",
-      birthdate: "",
-      avatar: "",
-      role: "connected_user",
-      phone_number: "",
-      confirmPassword: "",
-      zip_code: "",
-      street_number: "",
-      street_name: "",
-      city: "",
+      first_name: userAddress.first_name ?? "",
+      last_name: userAddress.last_name ?? "",
+      email: userAddress.email ?? "",
+      //password: "",
+      birthdate: userAddress.birthdate ?? "",
+      //avatar: "",
+      //role: "connected_user",
+      phone_number: userAddress.phone_number ?? "",
+      //confirmPassword: "",
+      zip_code: userAddress.zip_code ?? "",
+      street_number: userAddress.street_number ?? "",
+      street_name: userAddress.street_name ?? "",
+      city: userAddress.city ?? "",
     },
   });
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
@@ -91,8 +92,8 @@ const UserProfile = () => {
 
   const onSubmit: SubmitHandler<UserAddressInterface> = (data) => {
     console.log(data);
-    us.updateUserPut(userAddress.id,data)
-
+    us.updateUserPut(userAddress.id, data)
+    flagUpdate = !flagUpdate;
   }
 
   function imageProfileUrl(id: number): string {
