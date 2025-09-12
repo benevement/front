@@ -21,17 +21,15 @@ const UserProfile = () => {
   let flagUpdate: boolean = false;
 
   // variables d'authentifications tirées du store
-  //const role = useAuthStore((state) => (state.user?.role));
   const authUserStored = useAuthStore((state) => (state.user));
-
-  const setUser = userStore((state) => state.setUser)
+  //const setUser = userStore((state) => state.setUser)
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
 
   // 10/09 : ne pas faire afficher le role dans le userStorage.
   const [userAddressStorage, setUserAddressStorage] = useState<UserAddressStoreType>({
-    //id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "connected_user", user_id: 0, zip_code: "", street_number: "", street_name: "", city: "",
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", user_id: 0, zip_code: "", street_number: "", street_name: "", city: "",
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "", user_id: 0,
+     zip_code: "", street_number: "", street_name: "", city: "",
   });
 
   const assignUserStorage = async (): Promise<void> => {
@@ -40,10 +38,8 @@ const UserProfile = () => {
       const adr = await lStoreAddressData(authUserStored);
       const rudadr = { ...rud, ...adr }
       if (rud && rud.id != 0 && adr) {
-        //setUserStorage(rud);
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
         setUserAddressStorage(adr); // useState
-        //setUser(rud); // on set le store Zustand
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
       }
     }
@@ -53,33 +49,32 @@ const UserProfile = () => {
   }
 
   useEffect(() => {
+
+    // pour mettre à jour les données par défaut à partir du local Storage
+    if (userAddressStorage){
+      reset(userAddress); // reset vient de react-hook-form
+    }
     assignUserStorage();
     //}, [user])      // user déplacé vers services/api/axioProfile.ts
-  }, [flagUpdate])
+  }, [flagUpdate, userAddressStorage])
 
   let screenTitle = null;
   if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
-  // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
+
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
   const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
   const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
-  //const profileId = authUserStored?.id ? Number(authUserStored.id) : 0;
 
-
-  const { register, handleSubmit, formState: { errors }, } = useForm<UserAddressInterface>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<UserAddressInterface>({
     defaultValues: {
       id: 0,
       first_name: userAddress.first_name ?? "",
       last_name: userAddress.last_name ?? "",
       email: userAddress.email ?? "",
-      //password: "",
       birthdate: userAddress.birthdate ?? "",
-      //avatar: "",
-      //role: "connected_user",
       phone_number: userAddress.phone_number ?? "",
-      //confirmPassword: "",
       zip_code: userAddress.zip_code ?? "",
       street_number: userAddress.street_number ?? "",
       street_name: userAddress.street_name ?? "",

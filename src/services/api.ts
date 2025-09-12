@@ -5,10 +5,10 @@ import { updateStoreWithToken } from "./UserService";
 const api = axios.create({
 
   baseURL: 'http://localhost:3000',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    withCredentials: true,
+    //'Access-Control-Allow-Origin': '*',    
     }
 });
 
