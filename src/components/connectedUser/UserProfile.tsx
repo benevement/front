@@ -1,16 +1,14 @@
-// Revision : 08/09/25
+// Revision : 15/09/25
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
-// 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { IUser, UserAddressInterface } from "../../interfaces/IUser";
+import { IUpdateProfile } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
-import { UserAddressStoreType, userAddressStore, userStore } from "../../stores/userStore";
+import { userAddressStore } from "../../stores/userStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
 import UserProfile_adm from "../admin/UserProfile_adm";
 import UserService from "../../services/UserService";
 import { useAuthStore } from "../../stores/useAuthStore";
-//import { recAddressData, recUserData } from "../../services/api/axiosProfile"
 import axios from "axios";
 import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
 
@@ -26,20 +24,21 @@ const UserProfile = () => {
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
 
-  // 10/09 : ne pas faire afficher le role dans le userStorage.
-  const [userAddressStorage, setUserAddressStorage] = useState<UserAddressStoreType>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", user_id: 0,
-     zip_code: "", street_number: "", street_name: "", city: "",
+  const [userAddressStorage, setUserAddressStorage] = useState<IUpdateProfile>({
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "",
+    address: { user_id: 0, zip_code: "", street_number: "", street_name: "", city: "", }
   });
 
   const assignUserStorage = async (): Promise<void> => {
     try {
-      const rud = await lStoreUserData(authUserStored);
-      const adr = await lStoreAddressData(authUserStored);
-      const rudadr = { ...rud, ...adr }
+      const rud = await lStoreUserData(authUserStored); // get user from BDD
+      const adr = await lStoreAddressData(authUserStored); // get Address from BDD
+      console.log("adr : ", adr)
+      const rudadr: IUpdateProfile = { ...rud, address: adr } // on neste adr (address) dans rud
       if (rud && rud.id != 0 && adr) {
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
-        setUserAddressStorage(adr); // useState
+        console.log("Dans le IF");
+        //setUserAddressStorage(adr); // useState
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
       }
     }
@@ -48,47 +47,66 @@ const UserProfile = () => {
     }
   }
 
-  useEffect(() => {
-
-    // pour mettre à jour les données par défaut à partir du local Storage
-    if (userAddressStorage){
-      reset(userAddress); // reset vient de react-hook-form
-    }
+  useEffect(() => { //Set le store au chargement de la page
     assignUserStorage();
-    //}, [user])      // user déplacé vers services/api/axioProfile.ts
-  }, [flagUpdate, userAddressStorage])
+    setUserAddressStorage(userAddress);
+    //reset(userAddressStorage);
+  }, [])
+
+
 
   let screenTitle = null;
+  // Affichage spécifique aux Admins
   if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
-
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
   const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
   const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<UserAddressInterface>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<IUpdateProfile>({
     defaultValues: {
-      id: 0,
+      id: userAddress.id,
       first_name: userAddress.first_name ?? "",
       last_name: userAddress.last_name ?? "",
       email: userAddress.email ?? "",
       birthdate: userAddress.birthdate ?? "",
       phone_number: userAddress.phone_number ?? "",
-      zip_code: userAddress.zip_code ?? "",
-      street_number: userAddress.street_number ?? "",
-      street_name: userAddress.street_name ?? "",
-      city: userAddress.city ?? "",
+      address: {
+        zip_code: userAddress.address?.zip_code ?? "",
+        street_number: userAddress.address?.street_number ?? "",
+        street_name: userAddress.address?.street_name ?? "",
+        city: userAddress.address?.city ?? "",
+      }
+
     },
   });
+
+  useEffect(() => {
+    if (userAddress && userAddress.id) {
+      reset(userAddress); // applique les valeurs chargées dans le form
+    }
+  }, [userAddress, reset])
+
+
+
+
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
   //  la compatibilité avec SubmitHandler<UserInterface>
 
-  const onSubmit: SubmitHandler<UserAddressInterface> = (data) => {
-    console.log(data);
-    us.updateUserPut(userAddress.id, data)
-    flagUpdate = !flagUpdate;
+  // lors de la validation du formulaire (clic sur "enregistrer") => MAJ des données en Back (Nest et BDD)
+  const onSubmit: SubmitHandler<IUpdateProfile> = async (data) => {
+    console.log("DATA ONSUBMIT", data);
+
+    const newData = await us.updateUserPut(userAddress.id ?? 0, data)
+
+    if (newData) {
+      //setUserAddress(newData.uptadedData); // MAJ du store 
+      console.log("newData.updatedData : ", newData.updatedData);
+    }
+    flagUpdate = !flagUpdate // déclencheur useEffect
+
   }
 
   function imageProfileUrl(id: number): string {
@@ -100,9 +118,10 @@ const UserProfile = () => {
   const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
-    let photo = imageProfileUrl(userAddressStorage?.id || 0);
-    console.log("userAddressStorage?.id : ", userAddressStorage.id)
-
+    //let photo = imageProfileUrl(userAddressStorage?.id || 0);
+    let photo = imageProfileUrl(userAddress?.id || 0);
+    //console.log("userAddressStorage?.id : ", userAddressStorage.id)
+    console.log("userAddressStorage?.id : ", userAddress.id)
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
@@ -255,17 +274,18 @@ const UserProfile = () => {
                     id="streetnum"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.street_number || " N° de voie"}
-                    {...register("street_number", {
+                    //placeholder={userAddress?.street_number || " N° de voie"}
+                    placeholder={userAddress.address?.street_number || " N° de voie"}
+                    {...register("address.street_number", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.street_number && (
+                  {errors.address?.street_number && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.street_number.message}
+                      {errors.address.street_number.message}
                     </p>
                   )}
                 </div>
@@ -286,17 +306,17 @@ const UserProfile = () => {
                     id="address"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.street_name || " Nom de la rue/voie/Lieu-dit,..."}
-                    {...register("street_name", {
+                    placeholder={userAddress.address?.street_name || " Nom de la rue/voie/Lieu-dit,..."}
+                    {...register("address.street_name", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.street_name && (
+                  {errors.address?.street_name && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.street_name.message}
+                      {errors.address?.street_name.message}
                     </p>
                   )}
                 </div>
@@ -317,17 +337,17 @@ const UserProfile = () => {
                     id="zipcode"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.zip_code || " CP"}
-                    {...register("zip_code", {
+                    placeholder={userAddress.address?.zip_code || " CP"}
+                    {...register("address.zip_code", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.zip_code && (
+                  {errors.address?.zip_code && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.zip_code.message}
+                      {errors.address.zip_code.message}
                     </p>
                   )}
                 </div>
@@ -347,17 +367,17 @@ const UserProfile = () => {
                   <input
                     id="city"
                     type="text"
-                    placeholder={userAddress?.city || " Commune de résidence"}
-                    {...register("city", {
+                    placeholder={userAddress.address?.city || " Commune de résidence"}
+                    {...register("address.city", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.city && (
+                  {errors.address?.city && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.city.message}
+                      {errors.address?.city.message}
                     </p>
                   )}
                 </div>
@@ -384,7 +404,8 @@ const UserProfile = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
-                      placeholder={userAddressStorage?.email || " Email"}
+                      //placeholder={userAddressStorage?.email || " Email"}
+                      placeholder={userAddress?.email || " Email"}
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}
@@ -417,18 +438,21 @@ const UserProfile = () => {
                       type="password"
                       autoComplete="current-password"
                       placeholder="Mot de passe"
+                      /*
                       {...register("password", {
                         required: "Mot de passe requis !",
                       })}
+                        */
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                                   ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                                   focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                     />
-                    {errors.password && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.password.message}
-                      </p>
-                    )}
+
+                    {/* {errors.password && ( */}
+                    {/* <p className="text-sm text-red-500 mt-1"> */}
+                    {/* {errors.password.message} */}
+                    {/* </p> */}
+                    {/* )} */}
 
                   </div>
                 </div>

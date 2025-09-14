@@ -1,12 +1,12 @@
 // revision : 05/09
 
 import { create } from "zustand/react";
-import { UserAddressInterface, IUserStorage, UserStorageType } from "../interfaces/IUser";
+import { IUpdateProfile, UserStorageType } from "../interfaces/IUser";
 import { persist } from "zustand/middleware";
 import { agecalc } from "../services/UserService";
 
 //export type UserStoreType = Omit<UserInterface, "password">;
-export type UserAddressStoreType = Omit<UserAddressInterface, "password"|"role">;
+//export type UserAddressStoreType = Omit<UserAddressNestedInterface, "password"|"role">;
 
 
 interface IUserStoreState {
@@ -39,28 +39,29 @@ export const userStore = create<IUserStoreState>()(
 // avec getAge, l'age n'est pas directement stockée dans le store (comme c'est persistant, l'âge 1 jour + tard pourrait être différent)
 // l'âge est calculé à la volée, à chaque accès au store.
 
-
 interface IUserAddressStoreState {
   // State
-  userAddress: UserAddressStoreType;
+  userAddress: IUpdateProfile;
   connection_date: Date;
 
   // Setters
-  setUserAddress: (userAddress: UserAddressStoreType) => void;
+  setUserAddress: (userAddress: IUpdateProfile) => void;
   setConnection_date: (connection_date: Date) => void;
   getAge: () => number;
 }
 
 
-// On place "userAddress" dans le local storage : il s'agit d'une fusion entre les objets User et Address.
+// uaStorage sera placé dans le local storage : il s'agit d'une fusion entre les objets User et Address.
 export const userAddressStore = create<IUserAddressStoreState>()(
   persist(
     (set, get) => ({
       // état initial
       userAddress: {
         id: 999, first_name: "", last_name: "", birthdate: "2000-01-01",
-        email: "a.b@c.com", phone_number: "01.02.03.04.05", role: "connected_user",
+        email: "default@mail.com", phone_number: "01.02.03.04.05",
+        address: {
         user_id: 0, zip_code: "", street_number: "", street_name: "", city: ""
+        }
       },
       connection_date: new Date(),
 
@@ -69,6 +70,6 @@ export const userAddressStore = create<IUserAddressStoreState>()(
       setConnection_date: (connection_date) => set((state) => ({ connection_date: { ...state.connection_date, connection_date } })),
       getAge: () => agecalc(get().userAddress.birthdate ?? "1970-01-01")
     }),
-    { name: 'userAddress', }, // nom unique pour le stockage
+    { name: 'uaStorage', }, // nom unique pour le stockage
   )
 );

@@ -50,7 +50,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/users/1" onClick={onClose} className="block p-2 rounded hover:bg-blue-100">
+                  <Link to="/users/profile" onClick={onClose} className="block p-2 rounded hover:bg-blue-100">
                     Mon Profil
                   </Link>
                 </li>

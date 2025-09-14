@@ -1,21 +1,12 @@
 // services/userService.ts
 import api, { refreshToken } from './api';
-import { RoleType, UserAddressInterface } from '../interfaces/IUser';
+import { IUpdateProfile, RoleType } from '../interfaces/IUser';
 import { useEffect } from 'react';
 import { useAuthStore } from "../stores/useAuthStore";
 import { decodeToken } from "../interfaces/IJwtPayload";
 import { IUser } from "../interfaces/IUser";
-//import { RoleType } from "../../../back/generated/prisma/index";
+import axios from 'axios';
 
-
-
-
-/* export interface IUser {
-  id: number;
-  email: string;
-  role: roleType;
-  phone_number?: string;
-} */
 
 export interface LoginInput {
   email: string;
@@ -100,12 +91,25 @@ export default class UserService {
       const response = await api.post<{ user: IUser, accessToken : string, refreshToken: string }>('/auth/register', input);
       const { accessToken  } = response.data;
       this.setAuth( accessToken );
-
+     
     } catch (error) {
-      console.error(error);
-      throw new Error('Registration failed');
+      if (axios.isAxiosError(error)) { // catch le user déjà registered en base
+        const status = error.response?.status;
+        if (status === 405) {
+          alert("Une erreur s'est produite: l'enregistrement de votre compte n'a pas abouti (utilisateur déjà existant).");
+          console.warn("Utilisateur déjà en base");
+          window.location.href = '/signup'; // redirection (sinon ça login ??)
+        } else {
+          console.error("Erreur inattendue:", error);
+          throw new Error('Registration failed');
+        }
+      } else {
+        console.error("Erreur inattendue:", error);
+        throw new Error('Registration failed');
+      }
     }
   };
+
 
   logout = () => {
     this.store.logout();
@@ -154,15 +158,13 @@ export default class UserService {
   // ajout 21/08 pour update profil utilisateur
   // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
   // TODO: voir typage retour de fonction
-  updateUserPut = async (id: number, userAddress: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
+  //updateUserPut = async (id: number, userAddress: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
+    updateUserPut = async (id: number, userAddress: IUpdateProfile) => {
     try {
       const response = await api.put(`/users/${id}`, userAddress);
-      console.log("log response dans React L160 : ", response)
+      console.log("response suite updateUserPut : ", response.data)
       return response.data;
     } catch (error) {
-      console.log(`id dans fonc : ${id}`)
-      console.log(`city dans fonc : ${userAddress.city}`)
-      console.error("erreur dans updateUserPut de UserService.ts : " ,error); 
       throw new Error('Failed to update user');
     }
   };

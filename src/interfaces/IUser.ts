@@ -6,14 +6,14 @@ export type roleType2 = "admin" | "volunteer" | "connected_user" | "visitor";
 
 export interface UserSignInInterface {
   email: string;
-  password: string;
+  password?: string;
 }
 export interface UserSignupInterface extends UserSignInInterface {
   confirmPassword?: string;
   phone_number?: string;
 }
 export default interface UserInterface extends UserSignInInterface, UserSignupInterface {
-  id: number;
+  id?: number;
   first_name: string; // prenom
   last_name: string; // nom
   birthdate?: string;
@@ -22,8 +22,27 @@ export default interface UserInterface extends UserSignInInterface, UserSignupIn
   address_id?: number;
 }
 
+/*
 export interface UserAddressInterface extends UserInterface, AddressInterface {
   // réunion des interfaces AddressInterface et UserInterface (pour utilisation dans écran UserProfile)
+  // peut servir pour traiter les données où les paramètres de User et Address ne sont pas "imbriqués" mais "à plat".    
+  }
+
+  // version Adresse imbriquée dans User => marche pas : résultat "aplati"
+  export interface UserAddressNestedInterface extends UserInterface { 
+    address?: AddressInterface;
+    }
+*/
+
+export interface IUpdateProfile {
+  id?: number;
+  first_name?: string; 
+  last_name?: string; 
+  birthdate?: string;
+  email?: string; 
+  phone_number?: string;
+  address_id?: number;
+  address?: AddressInterface;
 }
 
 export interface UserInterfaceBdd extends UserInterface {
@@ -54,29 +73,7 @@ export interface IUserStorage extends IUser {
 }
 export type UserStorageType = Omit<IUser, "role" | "address_id"> & { birthdate?: string }
 
-export interface IUser2 {
-  id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: roleType;
-  address: AddressInterface;
-  phone_number?: string;
-}
 
-
-
-/*
-  select: {
-    id: true,
-    email: true,
-    role: true,
-    last_name: true,
-    first_name: true,
-    birthdate: true,
-    phone_number: true,
-  },
-*/
 
 /*
 `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
