@@ -1,7 +1,8 @@
+// Revision : 15/09/25
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
-// 07/07 TODO : remplacer les placeHolders par les données utilisateur issues de la BDD
 
 import { useForm, SubmitHandler } from "react-hook-form";
+<<<<<<< HEAD
 import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
@@ -17,13 +18,26 @@ import api from "../../services/api";
 
 type UserStorageType = Omit<UserInterface, 'password'>; // TODO: doublon des types dans userStores.ts ??
 type UserStorageType2 = Omit<UserAddressInterface, 'password'>;
+=======
+import { IUpdateProfile } from "../../interfaces/IUser";
+import { useEffect, useState } from "react";
+import { userAddressStore } from "../../stores/userStore";
+import { VolunteerSection } from "../volunteer/UserProfile_vol";
+import UserProfile_adm from "../admin/UserProfile_adm";
+import UserService from "../../services/UserService";
+import { useAuthStore } from "../../stores/useAuthStore";
+import axios from "axios";
+import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
+>>>>>>> BEN-92
 
 
 const UserProfile = () => {
 
   const us = new UserService();
+  let flagUpdate: boolean = false;
 
   // variables d'authentifications tirées du store
+<<<<<<< HEAD
   //const role = useAuthStore((state) => (state.user?.role));
   const authUserStored = useAuthStore((state) => (state.user));
   const { user } = useAuthStore();
@@ -100,11 +114,49 @@ const UserProfile = () => {
   let screenTitle = null;
   if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
   // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
+=======
+  const authUserStored = useAuthStore((state) => (state.user));
+  //const setUser = userStore((state) => state.setUser)
+  const setUserAddress = userAddressStore((state) => state.setUserAddress)
+  const userAddress = userAddressStore((state) => state.userAddress)
+
+  const [userAddressStorage, setUserAddressStorage] = useState<IUpdateProfile>({
+    id: 0, email: "", last_name: "", first_name: "", birthdate: "",
+    address: { user_id: 0, zip_code: "", street_number: "", street_name: "", city: "", }
+  });
+
+  const assignUserStorage = async (): Promise<void> => {
+    try {
+      const rud = await lStoreUserData(authUserStored); // get user from BDD
+      const adr = await lStoreAddressData(authUserStored); // get Address from BDD
+      console.log("adr : ", adr)
+      const rudadr: IUpdateProfile = { ...rud, address: adr } // on "neste" adr (address) dans rud
+      if (rud && rud.id != 0 && adr) {
+        // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
+        console.log("Dans le IF");
+        setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
+      }
+    }
+    catch (error) { console.log("error : ", error); }
+  }
+
+  useEffect(() => { //Set le store au chargement de la page
+    assignUserStorage();
+    setUserAddressStorage(userAddress);
+  }, [])
+
+
+
+  let screenTitle = null;
+  // Affichage spécifique aux Admins
+  if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
+>>>>>>> BEN-92
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
   const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
   const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
+<<<<<<< HEAD
   //const userThis: UserInterface = fakeUsers[id];
 
 
@@ -114,49 +166,71 @@ const UserProfile = () => {
   //  pour avoir l'adresse correspondant au user
   //const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
   //const [userAddress, setUserAddress] = useState();
+=======
+>>>>>>> BEN-92
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<UserAddressInterface>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<IUpdateProfile>({
     defaultValues: {
-      id: 0,
-      first_name: "",
-      last_name: "",
-      email: "",
-      password: "",
-      birthdate: "",
-      avatar: "",
-      role: "connected_user",
-      phone_number: "",
-      confirmPassword: "",
-      zip_code: "",
-      street_number: "",
-      street_name: "",
-      city: "",
+      id: userAddress.id,
+      first_name: userAddress.first_name ?? "",
+      last_name: userAddress.last_name ?? "",
+      email: userAddress.email ?? "",
+      birthdate: userAddress.birthdate ?? "",
+      phone_number: userAddress.phone_number ?? "",
+      address: {
+        zip_code: userAddress.address?.zip_code ?? "",
+        street_number: userAddress.address?.street_number ?? "",
+        street_name: userAddress.address?.street_name ?? "",
+        city: userAddress.address?.city ?? "",
+      }
+
     },
   });
+
+  useEffect(() => {
+    if (userAddress && userAddress.id) {
+      reset(userAddress); // applique les valeurs chargées dans le form
+    }
+  }, [userAddress, reset])
+
+
+
+
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
   //  la compatibilité avec SubmitHandler<UserInterface>
 
-  const onSubmit: SubmitHandler<UserAddressInterface> = (data) =>
-    console.log(data);
+  // lors de la validation du formulaire (clic sur "enregistrer") => MAJ des données en Back (Nest et BDD)
+  const onSubmit: SubmitHandler<IUpdateProfile> = async (data) => {
+    const newData = await us.updateUserPut(userAddress.id ?? 0, data)
+    if (newData) {
+      //setUserAddress(newData.uptadedData); // MAJ du store 
+      console.log("newData.updatedData : ", newData.updatedData);
+    }
+    flagUpdate = !flagUpdate // déclencheur useEffect
+  }
 
   function imageProfileUrl(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
+<<<<<<< HEAD
     //console.log("photoUrl : ", photoUrl);
+=======
+>>>>>>> BEN-92
     return photoUrl;
   }
 
   const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
+<<<<<<< HEAD
     let photo = imageProfileUrl(userAddressStorage?.id || 0);
     //console.log("fakeUser.id : ", fakeUser?.id);
     console.log("userAddressStorage?.id : ",userAddressStorage.id )
 
+=======
+    let photo = imageProfileUrl(userAddress?.id || 0);
+    console.log("userAddressStorage?.id : ", userAddress.id)
+>>>>>>> BEN-92
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
@@ -166,6 +240,7 @@ const UserProfile = () => {
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
+<<<<<<< HEAD
           //console.log(`En-tête content-length non trouvée`);
           photo = "/images/UserProfile/colomb-82.png";
         }
@@ -175,6 +250,14 @@ const UserProfile = () => {
         console.log("erreur dans l'adresse de l'image : ", error);
       }
       //console.log(`photoView :  ${urlPhotoView}`);
+=======
+          photo = "/images/UserProfile/colomb-82.png";
+        }
+        setUrlPhotoView(photo);
+      } catch (error) {
+        console.log("erreur dans l'adresse de l'image : ", error);
+      }
+>>>>>>> BEN-92
     };
     imageLoad();
   }, []);
@@ -182,8 +265,8 @@ const UserProfile = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-2 border-blue-500">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-2 border-amber-100">
+      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 border-0 border-blue-500">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border-0 border-amber-100">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
             {isAdmin && screenTitle}
@@ -312,17 +395,18 @@ const UserProfile = () => {
                     id="streetnum"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.street_number || " N° de voie"}
-                    {...register("street_number", {
+                    //placeholder={userAddress?.street_number || " N° de voie"}
+                    placeholder={userAddress.address?.street_number || " N° de voie"}
+                    {...register("address.street_number", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.street_number && (
+                  {errors.address?.street_number && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.street_number.message}
+                      {errors.address.street_number.message}
                     </p>
                   )}
                 </div>
@@ -343,17 +427,17 @@ const UserProfile = () => {
                     id="address"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.street_name || " Nom de la rue/voie/Lieu-dit,..."}
-                    {...register("street_name", {
+                    placeholder={userAddress.address?.street_name || " Nom de la rue/voie/Lieu-dit,..."}
+                    {...register("address.street_name", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.street_name && (
+                  {errors.address?.street_name && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.street_name.message}
+                      {errors.address?.street_name.message}
                     </p>
                   )}
                 </div>
@@ -374,17 +458,17 @@ const UserProfile = () => {
                     id="zipcode"
                     type="text"
                     // autoComplete=""
-                    placeholder={userAddress?.zip_code || " CP"}
-                    {...register("zip_code", {
+                    placeholder={userAddress.address?.zip_code || " CP"}
+                    {...register("address.zip_code", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.zip_code && (
+                  {errors.address?.zip_code && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.zip_code.message}
+                      {errors.address.zip_code.message}
                     </p>
                   )}
                 </div>
@@ -404,17 +488,17 @@ const UserProfile = () => {
                   <input
                     id="city"
                     type="text"
-                    placeholder={userAddress?.city || " Commune de résidence"}
-                    {...register("city", {
+                    placeholder={userAddress.address?.city || " Commune de résidence"}
+                    {...register("address.city", {
                       //required: "Le nom est obligatoire.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                               focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                   />
-                  {errors.city && (
+                  {errors.address?.city && (
                     <p className="text-sm text-red-500 mt-1">
-                      {errors.city.message}
+                      {errors.address?.city.message}
                     </p>
                   )}
                 </div>
@@ -441,7 +525,12 @@ const UserProfile = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
+<<<<<<< HEAD
                       placeholder={userAddressStorage?.email || " Email"}
+=======
+                      //placeholder={userAddressStorage?.email || " Email"}
+                      placeholder={userAddress?.email || " Email"}
+>>>>>>> BEN-92
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}
@@ -474,18 +563,21 @@ const UserProfile = () => {
                       type="password"
                       autoComplete="current-password"
                       placeholder="Mot de passe"
+                      /*
                       {...register("password", {
                         required: "Mot de passe requis !",
                       })}
+                        */
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                                   ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
                                   focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-4"
                     />
-                    {errors.password && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.password.message}
-                      </p>
-                    )}
+
+                    {/* {errors.password && ( */}
+                    {/* <p className="text-sm text-red-500 mt-1"> */}
+                    {/* {errors.password.message} */}
+                    {/* </p> */}
+                    {/* )} */}
 
                   </div>
                 </div>
@@ -494,7 +586,8 @@ const UserProfile = () => {
               </div>
 
               <div className="flex flex-col justify-around col-span-2 ml-2">
-                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}>
+                {/* <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(us.updateUserPut.call)}> */}
+                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3" onClick={handleSubmit(onSubmit)}>
                   {/*Mettre à jour */}
                   Enregistrer
                 </button>

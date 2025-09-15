@@ -1,34 +1,46 @@
-// stores/useAuthStore.ts
-import { create } from 'zustand';
+import { create } from "zustand";
+import { IUser } from "../interfaces/IUser";
+import { decodeToken } from "../interfaces/IJwtPayload";
+//import { RoleType } from "../../../back/generated/prisma/index";
 import { roleType } from '../interfaces/IUser';
 
-interface User {
-  id: number;
-  email: string;
-  role: roleType;
-}
-
-interface AuthState {
-
-  user: User | null;
-  token: string | null;
-  setAuth: (user: User, token: string) => void;
+type AuthState = {
+  user: IUser | null;
+  accessToken: string | null;
+  isAuthenticated: boolean;
+  setAuth: (accessToken: string) => void;
   logout: () => void;
-}
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: JSON.parse(localStorage.getItem("user") || "null"),
-  token: localStorage.getItem("token"),
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
 
-  setAuth: (user, token) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
-    set({ user, token });
-    console.log('user connecté', user, token)
+  setAuth: (accessToken) => {
+    const decoded = decodeToken(accessToken);
+    if (!decoded) return;
+
+    const user: IUser = {
+      id: decoded.sub,
+      email: decoded.email,
+      role: decoded.role as roleType,
+      first_name: decoded.first_name ?? "",
+      last_name: decoded.last_name ?? "",
+      phone_number: decoded.phone_number ?? "",
+      address_id: decoded.address_id ?? 0,
+    };
+
+    // mise à jour du store
+    set({ user, accessToken, isAuthenticated: true });
+
+    // sauvegarde manuelle du flag dans le localStorage
+    localStorage.setItem("isAuthenticated", "true");
   },
+
   logout: () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    set({ user: null, token: null });
+    set({ user: null, accessToken: null, isAuthenticated: false });
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("uaStorage");
   },
 }));

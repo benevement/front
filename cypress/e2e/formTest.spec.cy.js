@@ -1,6 +1,9 @@
 const { CYPRESS_URL_BASE } = require("./connection.cy")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> BEN-92
 describe('Should do something', () => {
 
   beforeEach(() => {
@@ -8,9 +11,12 @@ describe('Should do something', () => {
    //cy.visit(CYPRESS_URL_BASE+"/formtest")
   })
 
+<<<<<<< HEAD
   // it('should connect to a site', () => {
   //   cy.visit('http://localhost:5173/formtest')
   // })
+=======
+>>>>>>> BEN-92
 
   it("should verify various stuff", () => {
     cy.contains(/[Nn]ame/).should('exist')

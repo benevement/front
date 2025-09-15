@@ -11,8 +11,8 @@ interface User {
   id: number;
   email: string;
   role: roleType;
-  firstname?: string;
-  lastname?: string;
+  first_name?: string;
+  last_name?: string;
   phone_number?: string;
   address?: string;
 }
@@ -86,7 +86,7 @@ export default function GestionRoles() {
             {users.map((u) => (
               <tr key={u.id} className="border-t">
                 <td className="py-3 px-4">
-                  {u.firstname} {u.lastname}
+                  {u.first_name} {u.last_name}
                 </td>
                 <td className="py-3 px-4">
                   <select

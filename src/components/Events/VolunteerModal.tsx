@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 
 type Volunteer = {
   id: number;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   email: string;
 };
 
@@ -57,7 +57,7 @@ export default function VolunteerModal({
                 checked={selected.includes(volunteer.id)}
                 onChange={() => toggle(volunteer.id)}
               />
-              <p>{volunteer.firstname} {volunteer.lastname} </p>
+              <p>{volunteer.first_name} {volunteer.last_name} </p>
             </li>
           ))}
         </ul>
@@ -70,6 +70,8 @@ export default function VolunteerModal({
             Annuler
           </button>
           <button
+            type="button"
+            id="validate-volunteers"
             className="custom-button"
             onClick={handleConfirm}
           >

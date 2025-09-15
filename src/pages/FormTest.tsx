@@ -46,6 +46,10 @@ function FormTest() {
 
   // utilisation du Store (useAuthStore2)
   const { user, connection_date, setUser, getAge } = userStore();
+<<<<<<< HEAD
+=======
+
+>>>>>>> BEN-92
 
   const handleList = async () => {
     console.log("handle List");

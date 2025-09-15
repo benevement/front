@@ -1,5 +1,7 @@
 import { IEvent } from "../interfaces/IEvent";
 import api from "./api";
+import { AddressInterface } from "../interfaces/IAddress";
+import AddressService from "./AddressService";
 
 export default class EventService {
 
@@ -14,8 +16,18 @@ export default class EventService {
   }
 
   createEvent = async (data: IEvent) => {
+
+     const eventData = {
+      ...data,
+      event_date: new Date(data.event_date).toISOString(),
+      end_invitation_date: new Date(data.end_invitation_date).toISOString(),
+      volunteers_needed: Number(data.volunteers_needed),
+      max_participants: Number(data.max_participants),
+    };
+
     try {
-      const response = await api.post("/events", data)
+      console.log("data envoyée au service", eventData)
+      const response = await api.post("/events", eventData)
       return {
         data: response.data,
         status: response.status
@@ -26,24 +38,38 @@ export default class EventService {
     }
   }
 
-  getEventById = async (id: number) => {
+  getEventWithAddressById = async (id: number): Promise<IEvent & { address?: AddressInterface }> => {
     try {
       const response = await api.get(`/events/${id}`);
-      return response.data;
+      const event = response.data;
+
+      let address = undefined;
+      if (event.addressId) {
+        address = await new AddressService().getAddressById(event.addressId);
+      }
+
+      return {
+        ...event,
+        address,
+      };
     } catch (error) {
-      console.error(error);
-      throw new Error("Failed to get event");
+      console.error("Failed to get event with address", error);
+      throw new Error("Failed to get event with address");
     }
   }
 
   updateEvent = async (eventId: number, data: IEvent) => {
 
     // Surement à modifier postérieurement en fonction des éléments qui seront présents en back
-    const { creator, id, ...updatedData } = data;
+    //const { created_by_id, id, addressId, creator, ...updatedData } = data;
+    const { created_by_id, id, address_id, ...updatedData } = data;
 
     const formattedData = {
       ...updatedData,
-      date: new Date(data.date).toISOString(),
+      address: data.address,
+      event_date: new Date(data.event_date).toISOString(),
+      end_invitation_date: new Date(data.end_invitation_date).toISOString(),
+      invited_volunteers: data.invited_volunteers.map(v => (typeof v === 'number' ? v : v.id)),
     };
 
     console.log("data a envoyer", formattedData);
@@ -69,7 +95,8 @@ export default class EventService {
 
   publishEvent = async (id: number) => {
   try {
-    const response = await api.patch(`/events/${id}`, { status: "PUBLISHED" });
+    const response = await api.patch(`/events/${id}`, { status: "published" });
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error(error);
