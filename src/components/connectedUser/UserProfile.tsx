@@ -34,23 +34,19 @@ const UserProfile = () => {
       const rud = await lStoreUserData(authUserStored); // get user from BDD
       const adr = await lStoreAddressData(authUserStored); // get Address from BDD
       console.log("adr : ", adr)
-      const rudadr: IUpdateProfile = { ...rud, address: adr } // on neste adr (address) dans rud
+      const rudadr: IUpdateProfile = { ...rud, address: adr } // on "neste" adr (address) dans rud
       if (rud && rud.id != 0 && adr) {
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
         console.log("Dans le IF");
-        //setUserAddressStorage(adr); // useState
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
       }
     }
-    catch (error) {
-      console.log("error : ", error);
-    }
+    catch (error) { console.log("error : ", error); }
   }
 
   useEffect(() => { //Set le store au chargement de la page
     assignUserStorage();
     setUserAddressStorage(userAddress);
-    //reset(userAddressStorage);
   }, [])
 
 
@@ -97,30 +93,23 @@ const UserProfile = () => {
 
   // lors de la validation du formulaire (clic sur "enregistrer") => MAJ des données en Back (Nest et BDD)
   const onSubmit: SubmitHandler<IUpdateProfile> = async (data) => {
-    console.log("DATA ONSUBMIT", data);
-
     const newData = await us.updateUserPut(userAddress.id ?? 0, data)
-
     if (newData) {
       //setUserAddress(newData.uptadedData); // MAJ du store 
       console.log("newData.updatedData : ", newData.updatedData);
     }
     flagUpdate = !flagUpdate // déclencheur useEffect
-
   }
 
   function imageProfileUrl(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
-    //console.log("photoUrl : ", photoUrl);
     return photoUrl;
   }
 
   const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
-    //let photo = imageProfileUrl(userAddressStorage?.id || 0);
     let photo = imageProfileUrl(userAddress?.id || 0);
-    //console.log("userAddressStorage?.id : ", userAddressStorage.id)
     console.log("userAddressStorage?.id : ", userAddress.id)
     const imageLoad = async () => {
       try {
