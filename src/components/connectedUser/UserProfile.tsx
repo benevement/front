@@ -11,6 +11,7 @@ import UserService from "../../services/UserService";
 import { useAuthStore } from "../../stores/useAuthStore";
 import axios from "axios";
 import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
+import Dialog_success from "../../utils/Dialog_success";
 
 
 const UserProfile = () => {
@@ -33,11 +34,9 @@ const UserProfile = () => {
     try {
       const rud = await lStoreUserData(authUserStored); // get user from BDD
       const adr = await lStoreAddressData(authUserStored); // get Address from BDD
-      console.log("adr : ", adr)
       const rudadr: IUpdateProfile = { ...rud, address: adr } // on "neste" adr (address) dans rud
       if (rud && rud.id != 0 && adr) {
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
-        console.log("Dans le IF");
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
       }
     }
@@ -83,9 +82,6 @@ const UserProfile = () => {
       reset(userAddress); // applique les valeurs chargées dans le form
     }
   }, [userAddress, reset])
-
-
-
 
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
@@ -328,7 +324,7 @@ const UserProfile = () => {
                     // autoComplete=""
                     placeholder={userAddress.address?.zip_code || " CP"}
                     {...register("address.zip_code", {
-                      //required: "Le nom est obligatoire.",
+                      required: "Le code postal est indispensable.",
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
                               ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2
@@ -461,8 +457,9 @@ const UserProfile = () => {
                 </button>
 
               </div>
-            </section>
 
+            </section>
+            {<Dialog_success />}
             <section id="sectionVolunteer">
               {isVolunteer && <VolunteerSection />}
             </section>
