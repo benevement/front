@@ -2,23 +2,6 @@
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
 
 import { useForm, SubmitHandler } from "react-hook-form";
-<<<<<<< HEAD
-import UserInterface, { UserAddressInterface } from "../../interfaces/IUser";
-import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
-//import { fakeAddress } from "../../data/fakeAddress";
-import { userAddressStore, userStore } from "../../stores/userStore";
-import { VolunteerSection } from "../volunteer/UserProfile_vol";
-//import fakeUsers from "../../data/fakeUsers";
-//import { useParams } from "react-router-dom";
-import UserProfile_adm from "../admin/UserProfile_adm";
-import UserService from "../../services/UserService";
-import { useAuthStore } from "../../stores/useAuthStore";
-import api from "../../services/api";
-
-type UserStorageType = Omit<UserInterface, 'password'>; // TODO: doublon des types dans userStores.ts ??
-type UserStorageType2 = Omit<UserAddressInterface, 'password'>;
-=======
 import { IUpdateProfile } from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import { userAddressStore } from "../../stores/userStore";
@@ -28,7 +11,6 @@ import UserService from "../../services/UserService";
 import { useAuthStore } from "../../stores/useAuthStore";
 import axios from "axios";
 import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
->>>>>>> BEN-92
 
 
 const UserProfile = () => {
@@ -37,84 +19,6 @@ const UserProfile = () => {
   let flagUpdate: boolean = false;
 
   // variables d'authentifications tirées du store
-<<<<<<< HEAD
-  //const role = useAuthStore((state) => (state.user?.role));
-  const authUserStored = useAuthStore((state) => (state.user));
-  const { user } = useAuthStore();
-  const setUser = userStore((state) => state.setUser)
-  const setUserAddress = userAddressStore((state) => state.setUserAddress)
-  const userAddress = userAddressStore((state) => state.userAddress)
-
-  const recUserData = async () => {
-    try {
-      const resp = await api.get(`/users/${user?.id}`);
-      console.log("resp : ", resp)
-      return resp.data;
-      
-    }
-    catch (error) {
-      const axiosError = error as AxiosError;
-      console.log("Erreur inconnue : ", error);
-      console.log("axiosError : ", axiosError.message);
-    }
-  }
-
-    const recAddressData = async () => {
-    try {
-      const resp2 = await api.get(`/address/${user?.id}`);
-      console.log("resp2 : ", resp2)
-      return resp2.data;
-     
-    }
-    catch (error2) {
-      const axiosError = error2 as AxiosError;
-      console.log("Erreur inconnue : ", error2);
-      console.log("axiosError : ", axiosError.message);
-    }
-  }
-
-
-  const [userStorage, setUserStorage] = useState<UserStorageType>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor"
-  });
-  const [userAddressStorage, setUserAddressStorage] = useState<UserStorageType2>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor", user_id: 0, zip_code:"", street_number: "", street_name: "", city: ""
-  });
-
-  const assignUserStorage = async () => {
-    try {
-      const rud = await recUserData();
-      console.log("rud : ", rud);
-      const adr = await recAddressData();
-      console.log("adr : ", adr);
-      const rudadr = {...rud, ...adr}
-      console.log("T1");
-      if (rud.id != 0 && adr) {
-        console.log("T2");
-        //setUserStorage(rud);
-         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
-        setUserAddressStorage(adr);
-        setUser(rud); // on set le store Zustand
-        setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
-        console.log("T2B");
-      }
-
-    }
-    catch (error) {
-      console.log("error : ", error);
-    }
-  }
-
-  useEffect(() => {
-    console.log("T3 : useEffect");
-    assignUserStorage();
-  }, [user])
-
-
-  let screenTitle = null;
-  if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
-  // faut-il vérifier la validité du Token pour autoriser l'envoi du formulaire ? - 14/08/25
-=======
   const authUserStored = useAuthStore((state) => (state.user));
   //const setUser = userStore((state) => state.setUser)
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
@@ -145,29 +49,14 @@ const UserProfile = () => {
     setUserAddressStorage(userAddress);
   }, [])
 
-
-
   let screenTitle = null;
   // Affichage spécifique aux Admins
   if (authUserStored && authUserStored.role === "admin") { screenTitle = <UserProfile_adm /> }
->>>>>>> BEN-92
 
   // check si bénévole pour rajouter 2 boutons en fin de page.
   const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
   const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
-<<<<<<< HEAD
-  //const userThis: UserInterface = fakeUsers[id];
-
-
-  const profileId = authUserStored?.id ? Number(authUserStored.id) : 0;
-  //const fakeUser = fakeUsers.find((u) => (u.id === profileId));
-  // attribution d'une adresse fake => devra être retournée + tard par une requête SQL join
-  //  pour avoir l'adresse correspondant au user
-  //const userAddress = fakeAddress.find((item) => (item.user_id === profileId));
-  //const [userAddress, setUserAddress] = useState();
-=======
->>>>>>> BEN-92
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<IUpdateProfile>({
     defaultValues: {
@@ -194,8 +83,6 @@ const UserProfile = () => {
   }, [userAddress, reset])
 
 
-
-
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
   //  la compatibilité avec SubmitHandler<UserInterface>
@@ -212,25 +99,14 @@ const UserProfile = () => {
 
   function imageProfileUrl(id: number): string {
     const photoUrl = `/images/UserProfile/photo-${id}.png`;
-<<<<<<< HEAD
-    //console.log("photoUrl : ", photoUrl);
-=======
->>>>>>> BEN-92
     return photoUrl;
   }
 
   const [urlPhotoView, setUrlPhotoView] = useState<string>("/images/UserProfile/colomb-82.png");
 
   useEffect(() => {
-<<<<<<< HEAD
-    let photo = imageProfileUrl(userAddressStorage?.id || 0);
-    //console.log("fakeUser.id : ", fakeUser?.id);
-    console.log("userAddressStorage?.id : ",userAddressStorage.id )
-
-=======
     let photo = imageProfileUrl(userAddress?.id || 0);
     console.log("userAddressStorage?.id : ", userAddress.id)
->>>>>>> BEN-92
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
@@ -240,24 +116,12 @@ const UserProfile = () => {
           const size = parseInt(contentLength, 10);
           console.log(`Taille de l'image : ${size} octets`);
         } else {
-<<<<<<< HEAD
-          //console.log(`En-tête content-length non trouvée`);
-          photo = "/images/UserProfile/colomb-82.png";
-        }
-        setUrlPhotoView(photo);
-        //console.log("photo : ", photo);
-      } catch (error) {
-        console.log("erreur dans l'adresse de l'image : ", error);
-      }
-      //console.log(`photoView :  ${urlPhotoView}`);
-=======
           photo = "/images/UserProfile/colomb-82.png";
         }
         setUrlPhotoView(photo);
       } catch (error) {
         console.log("erreur dans l'adresse de l'image : ", error);
       }
->>>>>>> BEN-92
     };
     imageLoad();
   }, []);
@@ -525,12 +389,8 @@ const UserProfile = () => {
                       id="email"
                       type="email"
                       autoComplete="email"
-<<<<<<< HEAD
-                      placeholder={userAddressStorage?.email || " Email"}
-=======
                       //placeholder={userAddressStorage?.email || " Email"}
                       placeholder={userAddress?.email || " Email"}
->>>>>>> BEN-92
                       {...register("email", {
                         required: "Renseignez votre e-mail, svp",
                       })}
