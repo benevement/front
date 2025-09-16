@@ -15,6 +15,8 @@ import EventsList from '../components/Events/EventsList';
 import UserProfile from "../components/connectedUser/UserProfile";
 import VolunteerTask from "../components/volunteer/VolunteerTask";
 import FormTest from "../pages/FormTest";
+import Availabilities from "../components/volunteer/Availabilities";
+import UserSkills from "../components/volunteer/UserSkills";
 
 // Pages rôles supérieurs
 /* import Dashboard from "./pages/Dashboard";
@@ -56,6 +58,8 @@ export const routesConfig = [
   { path: "/events/:id/edit", element: <EventForm />, allowedRoles: adminRole  },
   { path: "/events/:id/", element: <EventDetails />, allowedRoles: allRoles  },
   { path: "/users/profile", element: <UserProfile />, allowedRoles: allRoles  }, // rev 07/09 mda
+  { path: "/users/avail", element: <Availabilities />, allowedRoles: eventMembersRoles  },
+  { path: "/users/skills", element: <UserSkills />, allowedRoles: eventMembersRoles  },
   { path: "/events/:url_event_id/tasks", element: <VolunteerTask />, allowedRoles: eventMembersRoles },
   
 

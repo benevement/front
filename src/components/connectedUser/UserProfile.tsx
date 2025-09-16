@@ -14,6 +14,7 @@ import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfi
 import Dialog_success from "../../utils/Dialog_success";
 
 
+
 const UserProfile = () => {
 
   const us = new UserService();
@@ -25,6 +26,7 @@ const UserProfile = () => {
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
 
+  const [isSuccessfull, setIsSuccessfull] = useState<boolean>(false); // pour boite de dialogue update OK
   const [userAddressStorage, setUserAddressStorage] = useState<IUpdateProfile>({
     id: 0, email: "", last_name: "", first_name: "", birthdate: "",
     address: { user_id: 0, zip_code: "", street_number: "", street_name: "", city: "", }
@@ -92,7 +94,8 @@ const UserProfile = () => {
     const newData = await us.updateUserPut(userAddress.id ?? 0, data)
     if (newData) {
       //setUserAddress(newData.uptadedData); // MAJ du store 
-      console.log("newData.updatedData : ", newData.updatedData);
+      //console.log("newData.updatedData : ", newData.updatedData);
+      if (newData.status && newData.status===200) setIsSuccessfull(true) ;
     }
     flagUpdate = !flagUpdate // déclencheur useEffect
   }
@@ -232,7 +235,7 @@ const UserProfile = () => {
                 <div className="grid grid-col-5 col-span-5 text-sm justify-right">
                   {" "}
                   {/*   <BOUTON>   */}
-                  {!isAdmin && <button type="submit" className="custom-button paddingButton2" > chang. Photo </button>}
+                  {!isAdmin && <button type="button" className="custom-button paddingButton2" > chang. Photo </button>}
 
                 </div>
               </div>
@@ -451,7 +454,7 @@ const UserProfile = () => {
                   {/*Mettre à jour */}
                   Enregistrer
                 </button>
-                <button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3">
+                <button type="button" className="custom-button paddingButton2 col-start-2 col-end-3">
                   {/*Modif mot de passe*/}
                   Modif. pass.
                 </button>
@@ -459,11 +462,11 @@ const UserProfile = () => {
               </div>
 
             </section>
-            {<Dialog_success />}
             <section id="sectionVolunteer">
               {isVolunteer && <VolunteerSection />}
             </section>
           </form>
+          {isSuccessfull && <Dialog_success /> } 
         </div>
       </div>
 

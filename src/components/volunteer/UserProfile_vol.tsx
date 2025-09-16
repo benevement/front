@@ -2,24 +2,33 @@
 // TODO : copie des autres + ajout 2 boutons
 // => plutot créer 2 composants boutons à intégrer à l'autre component.
 
-// Bouton "Modify password"
+import { Link } from "react-router-dom"
+
 // Bouton User Skills
 // Bouton Avaibility
 
 export const VolunteerSection = () => {
 
-    
-    return (
-        <>
-            <div className="grid grid-cols-2 text-sm justify-around items-center space-x-2">
-                <button type="button" className="custom-button col-start-1 col-end-2">
-                  Compétences
-                </button>
-                <button type="submit" className="custom-button col-start-2 col-end-3">
-                  Disponibilités
-                </button>
-              </div>
-        </>
-    )
+
+  return (
+    <>
+      <div className="container grid grid-cols-2 gap-2 text-sm">
+        <div className="w-full">
+          <Link to="/users/skills/" className="block w-full">
+            <button type="button" className="custom-button w-full">
+              Compétences
+            </button>
+          </Link>
+        </div>
+        <div className="w-full">
+          <Link to="/users/avail/" className="block w-full">
+            <button type="submit" className="custom-button w-full bg-fuchsia-600">
+              Disponibilités
+            </button>
+          </Link>
+        </div>
+      </div>
+    </>
+  )
 }
 
