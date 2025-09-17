@@ -10,7 +10,9 @@ export const lStoreUserData = async (user: IUser | null): Promise<IUserStorage |
   // on va chercher l'ensemble des données utilisateur à partir de de l'id du user authentifié (useAuthStore)
 
   try {
-    const resp = await api.get(`/users/p2/${user?.id}`);
+
+    //const resp = await api.get(`/users/p2/${user?.id}`); // commenté 17/09 pour suppression findOneById dans Nest users.controller.ts
+    const resp = await api.get(`/users/${user?.id}`);
     //console.log("resp : ", resp)
     return resp.data;
   }

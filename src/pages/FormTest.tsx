@@ -1,8 +1,8 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import api from "../services/api";
 import { useEffect, useState } from "react";
-import { UserInterfaceBdd } from "../interfaces/IUser";
-//import fakeUsers from "../data/fakeUsers";
+import UserInterface, { IUser, UserInterfaceBdd } from "../interfaces/IUser";
+import fakeUsers from "../data/fakeUsers";
 import { userStore } from "../stores/userStore";
 
 interface Idata {
@@ -43,12 +43,14 @@ function FormTest() {
   //console.log("**fakeusers : ", Array.from(axiosDataArr));
 
 
-  // utilisation du Store (useAuthStore2)
+  // utilisation du Store (userStore)
   const { user, connection_date, setUser, getAge } = userStore();
 
-
+const [fakeUserList, setFakeUserList] = useState<UserInterface[]|null>(null)
   const handleList = async () => {
     console.log("handle List");
+    // avec ancien Front/Back :
+    /*
     try {
       const res = await api.get('/users');
       console.log("res.data *1* :", res.data);
@@ -62,7 +64,13 @@ function FormTest() {
     catch (err) {
       console.error("erreur get axios : ", err);
     }
+      */
+     const list = fakeUsers.map((u) => u);
+     setFakeUserList(list);
+
   }
+
+
 
   const messageSubmit = isSubmitting ? "Transfert en cours..." : "";
 
@@ -116,7 +124,11 @@ function FormTest() {
       <div className="flex items-center m-3 bg-emerald-100 p-4">
         <button className="custom-button p-3 h-1/2" onClick={handleList}>Listing users</button>
       </div>
+      <ul>
+       {fakeUserList?.map((item) => `${item.email} - ${item.first_name} ${item.last_name}`)}
+       </ul>
       {axiosData?.message}
+
       {/* {axiosData && axiosData.fakusers.forEach((item) => (`<p>${item}</p>`))} */}
 
       <div className="px-4 text-green-600 m-3">
