@@ -15,6 +15,7 @@ export default class EventService {
     }
   }
 
+
   createEvent = async (data: IEvent) => {
 
      const eventData = {

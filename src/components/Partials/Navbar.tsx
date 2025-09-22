@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
 import { HiHome, HiMenu, HiUser, HiMail } from "react-icons/hi";
+import { FcVoicePresentation } from "react-icons/fc";
 
 type NavbarProps = {
   onToggleMenu: () => void;
-  onClose:() => void;
+  onClose: () => void;
 };
 
 export default function Navbar({ onToggleMenu, onClose }: NavbarProps) {
@@ -21,7 +22,7 @@ export default function Navbar({ onToggleMenu, onClose }: NavbarProps) {
             navigate("/");
             onClose();
           }}
-          className="text-white text-2xl">
+            className="text-white text-2xl">
             <HiHome />
           </button>
 
@@ -39,10 +40,24 @@ export default function Navbar({ onToggleMenu, onClose }: NavbarProps) {
         <div className="flex items-center space-x-3">
           {isLoggedIn ? (
             <>
+
+              {/* Pour tests Notifications (simulation)  = = = = = = = = = = = = = = = = */}
+              Notifs&nbsp; 
               <button
-                 onClick={() => {
+                onClick={() => {
                   onClose();
-                  //navigate(`/users/${user.id}`);
+                  navigate("/formtest2");
+                }}
+                className="text-white text-2xl"
+              >
+                <FcVoicePresentation />
+              </button>
+              {/* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  */}
+
+
+              <button
+                onClick={() => {
+                  onClose();
                   navigate(`/users/profile`); // rev 07/09 mda
                 }}
                 className="text-white text-2xl"

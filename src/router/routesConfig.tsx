@@ -31,6 +31,7 @@ import GestionRoles from '../components/admin/GestionRoles';
 
 
 import Homepage from '../pages/Homepage';
+import NotificationMsTest from '../pages/NotificationMsTest';
 
 
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
@@ -45,7 +46,9 @@ export const routesConfig = [
   { path: "/liens", element: <HomePageLiens />, allowVisitor: true },
   { path: "/signin", element: <SignIn />, allowVisitor: true },
   { path: "/signup", element: <SignUp />, allowVisitor: true },
+  
   { path: "/formtest", element: <FormTest />, allowVisitor: true }, // pour tests - temporaire.
+  { path: "/formtest2", element: <NotificationMsTest />, allowVisitor: true }, // pour tests - temporaire.
 
   // TODO: que faire des 2 lignes ?
   //{ path: "/test-refresh", element: <RefreshTest />, allowVisitor: true },
