@@ -2,6 +2,8 @@
 
 import z from "zod";
 import api from "../../services/api";
+import { FormEventHandler, useEffect, useState } from "react";
+import NotificationService from "../../services/NotificationService";
 
 /*
 NOTIFICATION_TYPE type (data in table) :
@@ -19,26 +21,52 @@ Feedback_sent_admin
 Feedback_sent_volunteer'
 
 */
-
-const NotificationTypeAdm = () =>{
-
-const recDataInDB = async() => {
-//    const axiosGetType = await api.get()
+type Props = {
+    toParent: () => void;
 }
 
-// sera à placer en ProtectedRoute, role=admin
+const NotificationTypeAdm = ({toParent}: Props) => {
 
-// shéma de validation ZOD
+    const [newNotifType,setNewNotifType] = useState<string>("")
 
-/*
-const notifTypeSchema = z.object({
-    type: z.string().max(35, "Moins de 35 caractères SVP")
-}).refine((data) => data.type != dataInDB.type)
+    const handleSub1 = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Dans handleSubmit");
+        NotificationService.putDataInMsDb(newNotifType);
+        NotificationService.fetchDataInMsDb();
+    }
 
+    useEffect (() => {
+        toParent();
+    },[newNotifType])
 
-*/
+    // sera à placer en ProtectedRoute, role=admin
 
-// WORK IN PROGRESS
+    // shéma de validation ZOD
+
+    /*
+    const notifTypeSchema = z.object({
+        type: z.string().max(35, "Moins de 35 caractères SVP")
+    }).refine((data) => data.type != dataInDB.type)
+    */
+    return (
+        <>
+            <div className="container mx-2 max-w-3/4">
+                <h1> nouveau type de notification</h1>
+                <form onSubmit={handleSub1}>
+                    <div className="grid grid-cols-3 gap:2 py-2">
+                        <label htmlFor="notiftypeid" className="text-slate-800 min-h-8 text-center">Type : </label>
+                        <input id="notiftypeid" name="notiftype" type="text"
+                         className="bg-amber-50 border-2 border-amber-600"
+                         onChange={(evt) => setNewNotifType(evt.target.value)}
+                         />
+                        <button type="submit" className="bg-blue-200 hover:bg-blue-300"> Ajouter </button>                        
+                    </div>
+                </form>
+            </div>
+        </>
+    )
+    // WORK IN PROGRESS
 
 
 }

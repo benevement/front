@@ -13,6 +13,10 @@
   .custbigfont {
     @apply text-3xl text-red-800;
   }
+  .custbutton {
+    @apply bg-cyan-800 border-2 px-8 py-4 rounded text-center;
+  }
+  
 }
 
 /* conversion HEXA => tailwind approximatives (https://hextotailwind.com/)
