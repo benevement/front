@@ -8,7 +8,7 @@ interface IPropsNotif {
     notiftype: string;
 }
 
-const NotificationMsTest = ({ notiftype }: IPropsNotif) => {
+const NotificationMsTest = () => { // { notiftype }: IPropsNotif
 
     const styleStr = "text-white bg-cyan-600 border-2 p-2 m-2 rounded-xl text-center hover:bg-cyan-500 cursor-pointer h-fit "
     //const [notifTypeList, setNotifTypeList] = useState<Promise<INotification_type[]>>(); 
