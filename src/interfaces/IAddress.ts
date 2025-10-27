@@ -7,3 +7,9 @@ export interface AddressInterface {
     user_id?: number;
 }
 
+/*
+export interface AddressInterface2  extends AddressInterface {
+    id?: number;
+    
+}
+*/

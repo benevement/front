@@ -32,6 +32,7 @@ import GestionRoles from '../components/admin/GestionRoles';
 
 import Homepage from '../pages/Homepage';
 import NotificationMsTest from '../pages/NotificationMsTest';
+import VolunteerTask2 from '../components/volunteer/VolunteerTask2';
 
 
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
@@ -49,11 +50,11 @@ export const routesConfig = [
   
   { path: "/formtest", element: <FormTest />, allowVisitor: true }, // pour tests - temporaire.
   { path: "/formtest2", element: <NotificationMsTest />, allowVisitor: true }, // pour tests - temporaire.
+  { path: "/voltask/:url_event_id/tasks", element: <VolunteerTask />, allowVisitor: true }, // pour tests - temporaire.
+  //{ path: "/voltask", element: <VolunteerTask2 />, allowVisitor: true }, // pour tests - temporaire.
+  //TODO: à redéplacer quand câblé avec le Back.
 
-  // TODO: que faire des 2 lignes ?
-  //{ path: "/test-refresh", element: <RefreshTest />, allowVisitor: true },
-  //{ path: "/tokenStatus", element: <TokenStatus />, allowVisitor: true },
-
+  { path: "/auth/google", allowVisitor: true }, // lien pour l'authentification Google OAuth2
 
   // Pages réservées aux utilisateurs connectés
   { path: "/events/new", element: <EventForm />, allowedRoles: adminRole  },

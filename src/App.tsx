@@ -22,10 +22,7 @@ function App() {
           </div>
         <Routes>
           {routesConfig.map(({ path, element, allowedRoles, allowVisitor }) => (
-            <Route
-              key={path}
-              element={<ProtectedRoute allowedRoles={allowedRoles} allowVisitor={allowVisitor} />}
-            >
+            <Route key={path} element={<ProtectedRoute allowedRoles={allowedRoles} allowVisitor={allowVisitor} />} >
               <Route path={path} element={element} />
             </Route>
           ))}

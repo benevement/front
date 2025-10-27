@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserSignInInterface } from "../../interfaces/IUser";
 import UserService from '../../services/UserService';
 
@@ -99,6 +99,11 @@ export default function SignIn() {
             </button>
           </div>
         </form>
+        <div className="h-10 align-bottom text-center pt-2 text-gray-400 hover:text-blue-600">
+          <Link to="/auth/google">
+          Se connecter avec Google 
+          </Link>
+        </div>
       </div>
       {loginFailed && (
         <div className="mt-4 text-center text-red-600 font-semibold">

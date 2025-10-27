@@ -2,13 +2,16 @@ import api from "./api";
 
 export default class NotificationService {
 
+
     static getLastNotif = async () => {
       try {
-        const response = await api.get("/notification");
+        console.log("[NotificationService], getLastNotif() - T1")
+        const response = await api.get('/notifications', {params: {limit: 2}});
+        console.log("[NotificationService], getLastNotif() - T2")
         return response.data;
       } catch (error) {
         console.error(error);
-        throw new Error("Failed to fetch events");
+        throw new Error("Failed to fetch last notification");
       }
     }
 

@@ -14,12 +14,9 @@ import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfi
 import Dialog_success from "../../utils/Dialog_success";
 
 
-
 const UserProfile = () => {
 
   const us = new UserService();
-  let flagUpdate: boolean = false;
-
   // variables d'authentifications tirées du store
   const authUserStored = useAuthStore((state) => (state.user));
   //const setUser = userStore((state) => state.setUser)
@@ -27,16 +24,16 @@ const UserProfile = () => {
   const userAddress = userAddressStore((state) => state.userAddress)
 
   const [isSuccessfull, setIsSuccessfull] = useState<boolean>(false); // pour boite de dialogue update OK
-  const [userAddressStorage, setUserAddressStorage] = useState<IUpdateProfile>({
-    id: 0, email: "", last_name: "", first_name: "", birthdate: "",
-    address: { user_id: 0, zip_code: "", street_number: "", street_name: "", city: "", }
-  });
 
+  // Récupération de certaines datas du user pour les mettre en local storage persist
   const assignUserStorage = async (): Promise<void> => {
     try {
       const rud = await lStoreUserData(authUserStored); // get user from BDD
+      //console.log("[assignUserStorage] rud : ", rud) // TODO: DEBUG
       const adr = await lStoreAddressData(authUserStored); // get Address from BDD
+      //console.log("[assignUserStorage] adr : ", adr) // TODO: DEBUG
       const rudadr: IUpdateProfile = { ...rud, address: adr } // on "neste" adr (address) dans rud
+      //console.log("[assignUserStorage] rudadr : ", rudadr) // TODO: DEBUG
       if (rud && rud.id != 0 && adr) {
         // pas de set du User dans le useState si pas de user (id=0 => valeur par défaut de userStorage)
         setUserAddress(rudadr) // on set le store Zustand avec user complet (user + adresse)
@@ -45,11 +42,9 @@ const UserProfile = () => {
     catch (error) { console.log("error : ", error); }
   }
 
-  useEffect(() => { //Set le store au chargement de la page
+  useEffect(() => { // Set le store au chargement de la page
     assignUserStorage();
-    setUserAddressStorage(userAddress);
   }, [])
-
 
 
   let screenTitle = null;
@@ -60,14 +55,14 @@ const UserProfile = () => {
   const isVolunteer = authUserStored?.role && authUserStored.role == "volunteer" ? true : false;
   const isAdmin = authUserStored?.role && authUserStored.role === "admin" ? true : false;
 
-
+  // react-hook-form
   const { register, handleSubmit, formState: { errors }, reset } = useForm<IUpdateProfile>({
     defaultValues: {
       id: userAddress.id,
       first_name: userAddress.first_name ?? "",
       last_name: userAddress.last_name ?? "",
       email: userAddress.email ?? "",
-      birthdate: userAddress.birthdate ?? "",
+      birthdate: userAddress.birthdate ?? new Date("1970-01-03"),
       phone_number: userAddress.phone_number ?? "",
       address: {
         zip_code: userAddress.address?.zip_code ?? "",
@@ -85,19 +80,41 @@ const UserProfile = () => {
     }
   }, [userAddress, reset])
 
+  // reset de la Modal Dialog_success / InfoBox
+  useEffect(() => {
+    if (isSuccessfull) setTimeout(() => (setIsSuccessfull(false)), 5000)
+  }, [isSuccessfull])
+
   // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
   // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
   //  la compatibilité avec SubmitHandler<UserInterface>
 
   // lors de la validation du formulaire (clic sur "enregistrer") => MAJ des données en Back (Nest et BDD)
   const onSubmit: SubmitHandler<IUpdateProfile> = async (data) => {
-    const newData = await us.updateUserPut(userAddress.id ?? 0, data)
+    //console.log("OnSubmit userProfile avant us.updateUserPut()") //DEBUG: TODO:
+    //console.log("[onSubmit] data : ", JSON.stringify(data)) //DEBUG: TODO:
+
+    // Suppression des espaces vides (trim) avant envoi des données vers le Back
+    const dataTrimmed = Object.fromEntries(
+      Object.entries(data).map(
+        ([key, value]) => ([key, typeof value === "string" ? value.trim() : value])
+      )
+    )
+    const dataTrimmed2 = Object.fromEntries( // idem pour objet "Address", nesté.
+      Object.entries(dataTrimmed.address).map(
+        ([key, value]) => ([key, typeof value === "string" ? value.trim() : value])
+      )
+    )
+    const dataTrimmed3 = { ...dataTrimmed, ...dataTrimmed2 }; // on recréé l'ensemble (fusion)
+
+    //console.log(`dataTrimmed : ${JSON.stringify(dataTrimmed3)}`) //DEBUG: TODO:
+    // vers requête Axios
+    const newData = await us.updateUserPut(userAddress.id ?? 0, dataTrimmed3)
     if (newData) {
       //setUserAddress(newData.uptadedData); // MAJ du store 
-      //console.log("newData.updatedData : ", newData.updatedData);
-      if (newData.status && newData.status===200) setIsSuccessfull(true) ;
+      //console.log("newData.updatedData : ", newData.updatedData); //DEBUG: TODO:
+      if (newData.status && newData.status === 200) setIsSuccessfull(true);
     }
-    flagUpdate = !flagUpdate // déclencheur useEffect
   }
 
   function imageProfileUrl(id: number): string {
@@ -109,7 +126,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     let photo = imageProfileUrl(userAddress?.id || 0);
-    console.log("userAddressStorage?.id : ", userAddress.id)
+    //console.log("userAddressStorage?.id : ", userAddress.id)
     const imageLoad = async () => {
       try {
         const response = await axios.head(photo); // axios.head pour recup header
@@ -117,7 +134,7 @@ const UserProfile = () => {
 
         if (contentLength) { // autrement dit, si on a pu récupérer l'image
           const size = parseInt(contentLength, 10);
-          console.log(`Taille de l'image : ${size} octets`);
+          //console.log(`Taille de l'image : ${size} octets`);
         } else {
           photo = "/images/UserProfile/colomb-82.png";
         }
@@ -210,9 +227,9 @@ const UserProfile = () => {
                     id="birthdate"
                     type="date"
 
-                    placeholder={userAddress?.birthdate || " Date de naissance"}
+                    placeholder={userAddress?.birthdate?.toLocaleDateString() || " Date de naissance"}
                     {...register("birthdate", {
-                      valueAsDate: true,
+                      valueAsDate: true,  // handleSubmit recevra une instance de Date (pas un String)
                       required: false,
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm
@@ -466,7 +483,7 @@ const UserProfile = () => {
               {isVolunteer && <VolunteerSection />}
             </section>
           </form>
-          {isSuccessfull && <Dialog_success /> } 
+          {isSuccessfull && <Dialog_success />}
         </div>
       </div>
 

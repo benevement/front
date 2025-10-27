@@ -30,7 +30,7 @@ export default function SignUp() {
     try {
       await userService.register({
         email: data.email,
-        password: data.password,
+        password: data.password ?? "",
         phone_number: data.phone_number,
       });
 

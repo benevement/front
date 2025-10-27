@@ -31,6 +31,10 @@ export default function VolunteerModal({
   const toggle = (id: number) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
+    // prev : référence à l'état précédent du useState (variable "selected")
+    // si le tableau selected contenait l'id passé en paramètre de toggle()
+    // alors la nouvelle valeur du tableau (définie par setSelected) sera le tableau précédent sans la valeur de cet ID
+    // sinon on ajoute cet ID au tableau, dans le cas contraire (spread operator).
     );
   };
 

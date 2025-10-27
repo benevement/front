@@ -8,12 +8,10 @@ import IUser, { IUserStorage } from "../../interfaces/IUser";
 
 export const lStoreUserData = async (user: IUser | null): Promise<IUserStorage | undefined> => {
   // on va chercher l'ensemble des données utilisateur à partir de de l'id du user authentifié (useAuthStore)
-
   try {
-
     //const resp = await api.get(`/users/p2/${user?.id}`); // commenté 17/09 pour suppression findOneById dans Nest users.controller.ts
     const resp = await api.get(`/users/${user?.id}`);
-    //console.log("resp : ", resp)
+    console.log("[lStoreUserData] resp : ", resp)
     return resp.data;
   }
   catch (error) {
@@ -27,7 +25,7 @@ export const lStoreAddressData = async (user: IUser| null) => {
   // retourne l'adresse correspondant au user via la clef user_id de Address.
   try {
     const resp2 = await api.get(`/address/p2/${user?.id}`);
-    //console.log("resp2 : ", resp2)
+    console.log("[lStoreAddressData] resp2 : ", resp2)
     return resp2.data;
   }
   catch (error2) {

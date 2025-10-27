@@ -10,7 +10,7 @@ import axios from 'axios';
 
 export interface LoginInput {
   email: string;
-  password: string;
+  password?: string;  // password rendu optionnel 05/10 à cause implémentation OAuth2 Google
 }
 
 export interface RegisterInput {
@@ -22,11 +22,11 @@ export interface RegisterInput {
 export const useRestoreSession = () => {
   const { user } = useAuthStore();
 
-   useEffect(() => {
+  useEffect(() => {
     const flag = localStorage.getItem("isAuthenticated") === "true";
     console.log("flag value", flag)
 
-   const restore = async () => {
+    const restore = async () => {
       if (flag && !user) {
         console.log("[Restore] Restoring session...");
         try {
@@ -70,7 +70,7 @@ export const updateStoreWithToken = (accessToken: string) => {
 export default class UserService {
   private store = useAuthStore.getState();
 
-  private setAuth = (accessToken: string, ) => {
+  private setAuth = (accessToken: string,) => {
     this.store.setAuth(accessToken);
   };
 
@@ -88,10 +88,10 @@ export default class UserService {
 
   register = async (input: RegisterInput) => {
     try {
-      const response = await api.post<{ user: IUser, accessToken : string, refreshToken: string }>('/auth/register', input);
-      const { accessToken  } = response.data;
-      this.setAuth( accessToken );
-     
+      const response = await api.post<{ user: IUser, accessToken: string, refreshToken: string }>('/auth/register', input);
+      const { accessToken } = response.data;
+      this.setAuth(accessToken);
+
     } catch (error) {
       if (axios.isAxiosError(error)) { // catch le user déjà registered en base
         const status = error.response?.status;
@@ -115,9 +115,9 @@ export default class UserService {
     this.store.logout();
   };
   // --- CRUD USERS ---
-  getUsers = async (): Promise<IUser[]> => {
-    try {
-      const response = await api.get('/users');
+  getUsers = async (limit?: number): Promise<IUser[]> => {
+    try { // 05/10/25 : ajout d'un paramètre "limite" optionnel
+      const response = await api.get('/users', { params: limit ? { limit } : {} });
       return response.data;
     } catch (error) {
       console.error(error);
@@ -159,9 +159,13 @@ export default class UserService {
   // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
   // TODO: voir typage retour de fonction
   //updateUserPut = async (id: number, userAddress: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
-    updateUserPut = async (id: number, userAddress: IUpdateProfile) => {
+  updateUserPut = async (id: number, userAddress: IUpdateProfile) => {
     try {
+      console.log(`Dans updateUserPut id : ${id} - userAddress.address.zip_code : ${userAddress.address?.zip_code}`)
+      //console.log("userAddress DEBUG : ", userAddress)
+      //const {password, ...filteredUserAddress} = userAddress;
       const response = await api.put(`/users/${id}`, userAddress);
+      
       console.log("response suite updateUserPut : ", response.data)
       return response.data;
     } catch (error) {

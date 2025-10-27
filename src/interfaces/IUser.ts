@@ -16,7 +16,7 @@ export default interface UserInterface extends UserSignInInterface, UserSignupIn
   id?: number;
   first_name: string; // prenom
   last_name: string; // nom
-  birthdate?: string;
+  birthdate?: Date;
   avatar?: string; // URL de la photo utilisateur
   role: roleType;
   address_id?: number;
@@ -36,14 +36,23 @@ export interface UserAddressInterface extends UserInterface, AddressInterface {
 
 export interface IUpdateProfile {
   id?: number;
-  first_name?: string; 
-  last_name?: string; 
-  birthdate?: string;
-  email?: string; 
+  first_name?: string;
+  last_name?: string;
+  birthdate?: Date;
+  email?: string;
   phone_number?: string;
   address_id?: number;
   address?: AddressInterface;
 }
+
+/*
+export interface IUpdateProfile2 extends IUpdateProfile {
+  id?: number;
+  
+  address?: AddressInterface2;
+}
+*/
+
 
 export interface UserInterfaceBdd extends UserInterface {
   createdAt?: Date;
@@ -68,10 +77,12 @@ export interface IUser {
   phone_number?: string;
 }
 
+
+
 export interface IUserStorage extends IUser {
-  birthdate?: string;
+  birthdate?: Date;
 }
-export type UserStorageType = Omit<IUser, "role" | "address_id"> & { birthdate?: string }
+export type UserStorageType = Omit<IUser, "role" | "address_id"> & { birthdate?: Date }
 
 
 
