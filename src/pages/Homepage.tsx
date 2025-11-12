@@ -72,10 +72,7 @@ export default function Homepage() {
       </div>
 
       {user && (
-         <Link
-          to="/events"
-          className="custom-button"
-        >
+         <Link to="/events" className="custom-button"> 
           Voir les événements
         </Link>
       )}

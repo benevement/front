@@ -1,4 +1,4 @@
-const { CYPRESS_URL_BASE } = require("./connection.cy")
+//const { CYPRESS_URL_BASE } = require("./connection.cy")
 
 describe('Should do something', () => {
 

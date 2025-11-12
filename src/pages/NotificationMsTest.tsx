@@ -3,7 +3,6 @@ import NotificationTypeAdm from "../components/admin/NotificationTypeAdm";
 import { INotification_type } from "../interfaces/INotification";
 import NotificationService from "../services/NotificationService";
 import { IUser } from "../interfaces/IUser";
-import api from "../services/api";
 import UserService from "../services/UserService";
 
 
@@ -11,10 +10,9 @@ interface IPropsNotif {
     notiftype: string;
 }
 
-const NotificationMsTest = () => { // { notiftype }: IPropsNotif
+const NotificationMsTest = () => { 
 
     const styleStr = "text-white bg-cyan-600 border-2 p-2 m-2 rounded-xl text-center hover:bg-cyan-500 cursor-pointer h-fit "
-    //const [notifTypeList, setNotifTypeList] = useState<Promise<INotification_type[]>>(); 
     const [notifTypeList, setNotifTypeList] = useState<INotification_type[]>();
     const [userList, setUserList] = useState<IUser[]>();
     const [limit, setLimit] = useState<number>(3);
@@ -26,8 +24,6 @@ const NotificationMsTest = () => { // { notiftype }: IPropsNotif
             setNotifTypeList(await NotificationService.fetchDataInMsDb());
         }
         listing();
-
-        //setNotifTypeList(NotificationService.fetchDataInMsDb());
     }, [notifTypeList])
 
 

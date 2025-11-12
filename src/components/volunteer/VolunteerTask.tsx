@@ -7,6 +7,7 @@ import { fakeAddress } from "../../data/fakeAddress";
 import { fakeUser_task } from "../../data/fakeUser_task";
 import { ITasks } from "../../interfaces/ITasks";
 import { user_taskType } from "../../interfaces/types";
+import EventService from "../../services/EventService";
 
 const VolunteerTask = () => {
     // endpoints : 
@@ -27,9 +28,14 @@ const VolunteerTask = () => {
     // TODO: obtenir les infos à partir du Back après le SignIn (puis du user Store dans React) au lieu de passer par l'url ?
 
     // l'évènement correspond à l'event_id dans l'url - ex : http://localhost:5173/events/1/tasks
-    const event = fakeEvents.find((e) => (e.id === Number(url_event_id)))
+    //const event = fakeEvents.find((e) => (e.id === Number(url_event_id)))
     // son adresse peut être récupérée à partir de la clé address_id
-    const event_address = fakeAddress.find((a) => (a.id === event?.address_id));
+    //const event_address = fakeAddress.find((a) => (a.id === event?.address_id));
+
+    // récupérer liste des events associé au user connecté.
+
+    // récupération Event + Adresse associée  pour CHAQUE EVENT CORRESPONDANT A LA LISTE PRECEDENTE
+    const EventWithAddress = new EventService().getEventWithAddressById(1);
 
     // Dans la table des tasks, on récupère les tâches qui correspondent à l'event ID de la Route : 
     // <Route path='/events/:event_id/tasks' element={<VolunteerTask />} />

@@ -70,7 +70,8 @@ export default class EventService {
       address: data.address,
       event_date: new Date(data.event_date).toISOString(),
       end_invitation_date: new Date(data.end_invitation_date).toISOString(),
-      invited_volunteers: data.invited_volunteers.map(v => (typeof v === 'number' ? v : v.id)),
+      //invited_volunteers: data.invited_volunteers.map(v => (typeof v === 'number' ? v : v.id)),
+      invited_volunteers: data.invited_volunteers.map(v => (typeof v === 'number' ? v : null)),
     };
 
     console.log("data a envoyer", formattedData);

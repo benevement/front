@@ -13,7 +13,6 @@ import axios from "axios";
 import { lStoreAddressData, lStoreUserData } from "../../services/api/axiosProfile";
 import Dialog_success from "../../utils/Dialog_success";
 
-
 const UserProfile = () => {
 
   const us = new UserService();
@@ -262,7 +261,7 @@ const UserProfile = () => {
             <section id="sectionCenter" className="h-1/3 w-full">
               {/* <h1>MID</h1> */}
 
-              <div className="grid grid-cols-3 col-span-3 border-2 border-amber-600 rounded-md p-2">
+              <div className="grid grid-cols-3 col-span-3 border-1 border-amber-600 rounded-md p-2">
                 {/* = = = = = = = = */}
                 <label
                   htmlFor="streetnum"

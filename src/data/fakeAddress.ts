@@ -1,6 +1,6 @@
-import { AddressInterface2 } from "../interfaces/IAddress.ts";
+import { AddressInterface } from "../interfaces/IAddress.ts";
 
-export const fakeAddress: AddressInterface2[] = [
+export const fakeAddress: AddressInterface[] = [
   {
     id: 1,
     zip_code: "29290",

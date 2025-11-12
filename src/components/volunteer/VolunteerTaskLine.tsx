@@ -2,7 +2,7 @@ import { TaskListType } from "../../interfaces/ITasks"
 
 
 // composant enfant de <VolunteerTask />, permettant l'affichage d'une liste de tâches affecté à 1 user et à 1 event.
-const VolunteerTaskLine = (props: TaskListType) => {
+const VolunteerTaskLine = (props: Partial<TaskListType>) => {
 
 //fakeUser_Task : table de jointure task/user
 

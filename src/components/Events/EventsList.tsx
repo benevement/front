@@ -18,7 +18,7 @@ export default function EventsList() {
           const endInvitationDate = new Date(e.end_invitation_date);
 
           return {
-            ...e,
+            ...e, // Event avec MAJ de la date formatée
             event_date: eventDate.toLocaleDateString("fr-FR", {
               weekday: "long",
               year: "numeric",

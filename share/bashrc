@@ -1,0 +1,11 @@
+#!/bin/bash
+# root .bashrc personnalisé
+echo
+echo "***************************************"
+echo "*  mc	:   gestionnaire de fichiers  *"
+echo "*  vim	:   Editeur de texte          *"
+echo "***************************************"	    
+echo
+PS1='${debian_chroot:+($debian_chroot)}\[\e[01;31m\]\h:\[\e[0m\]\w\$ '
+alias ls='ls --color=auto'
+
