@@ -2,7 +2,7 @@
 // 07/07/25 : tous les leading-6 remplacés par des leading-4 => hauteur de ligne pour le texte au-dessus des champs input
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { IUpdateProfile } from "../../interfaces/IUser";
+import { IUpdateProfile} from "../../interfaces/IUser";
 import { useEffect, useState } from "react";
 import { userAddressStore } from "../../stores/userStore";
 import { VolunteerSection } from "../volunteer/UserProfile_vol";
@@ -84,9 +84,6 @@ const UserProfile = () => {
     if (isSuccessfull) setTimeout(() => (setIsSuccessfull(false)), 5000)
   }, [isSuccessfull])
 
-  // Sans useForm<UserInterface>(), TypeScript infère automatiquement un type basé sur l’objet defaultValues
-  // où "connected_user" est vu comme un simple string, et ne peut donc pas garantir
-  //  la compatibilité avec SubmitHandler<UserInterface>
 
   // lors de la validation du formulaire (clic sur "enregistrer") => MAJ des données en Back (Nest et BDD)
   const onSubmit: SubmitHandler<IUpdateProfile> = async (data) => {
@@ -94,16 +91,20 @@ const UserProfile = () => {
     //console.log("[onSubmit] data : ", JSON.stringify(data)) //DEBUG: TODO:
 
     // Suppression des espaces vides (trim) avant envoi des données vers le Back
+
+
     const dataTrimmed = Object.fromEntries(
       Object.entries(data).map(
         ([key, value]) => ([key, typeof value === "string" ? value.trim() : value])
       )
     )
+
     const dataTrimmed2 = Object.fromEntries( // idem pour objet "Address", nesté.
       Object.entries(dataTrimmed.address).map(
         ([key, value]) => ([key, typeof value === "string" ? value.trim() : value])
       )
     )
+
     const dataTrimmed3 = { ...dataTrimmed, ...dataTrimmed2 }; // on recréé l'ensemble (fusion)
 
     //console.log(`dataTrimmed : ${JSON.stringify(dataTrimmed3)}`) //DEBUG: TODO:
@@ -226,9 +227,10 @@ const UserProfile = () => {
                     id="birthdate"
                     type="date"
 
-                    placeholder={userAddress?.birthdate?.toLocaleDateString() || " Date de naissance"}
+                    // placeholder={userAddress?.birthdate?.toLocaleDateString() || " Date de naissance"}
                     {...register("birthdate", {
                       valueAsDate: true,  // handleSubmit recevra une instance de Date (pas un String)
+                      // ex : object (new Date("2025-11-13"))
                       required: false,
                     })}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm

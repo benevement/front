@@ -1,7 +1,7 @@
 // revision : 05/09
 
 import { create } from "zustand/react";
-import { IUpdateProfile, UserStorageType } from "../interfaces/IUser";
+import { IUpdateProfile, IUpdateProfilePayload, UserStorageType } from "../interfaces/IUser";
 import { persist } from "zustand/middleware";
 import { agecalc } from "../services/UserService";
 
@@ -24,13 +24,13 @@ export const userStore = create<IUserStoreState>()(
   persist(
     (set, get) => ({
       // état initial
-      user: { id: 999, first_name: "", last_name: "", birthdate: "2000-01-01", email: "a.b@c.com", phone_number: "01.02.03.04.05" },
+      user: { id: 999, first_name: "", last_name: "", birthdate: new Date("2000-01-01") as Date, email: "a.b@c.com", phone_number: "01.02.03.04.05" },
       connection_date: new Date(),
 
       // setters
       setUser: (user) => set({ user }),
       setConnection_date: (connection_date) => set((state) => ({ connection_date: { ...state.connection_date, connection_date } })),
-      getAge: () => agecalc(get().user.birthdate ?? "1970-01-01"),
+      getAge: () => agecalc(get().user.birthdate?.toISOString() ?? "1970-01-01"),
     }),
     { name: 'userStorage', }, // nom unique pour le stockage
   )
@@ -57,7 +57,7 @@ export const userAddressStore = create<IUserAddressStoreState>()(
     (set, get) => ({
       // état initial
       userAddress: {
-        id: 999, first_name: "", last_name: "", birthdate: "2000-01-01",
+        id: 999, first_name: "", last_name: "", birthdate: new Date("2000-01-01"),
         email: "default@mail.com", phone_number: "01.02.03.04.05",
         address: {
         user_id: 0, zip_code: "", street_number: "", street_name: "", city: ""
@@ -68,7 +68,7 @@ export const userAddressStore = create<IUserAddressStoreState>()(
       // setters
       setUserAddress: (userAddress) => set({ userAddress }),
       setConnection_date: (connection_date) => set((state) => ({ connection_date: { ...state.connection_date, connection_date } })),
-      getAge: () => agecalc(get().userAddress.birthdate ?? "1970-01-01")
+      getAge: () => agecalc(get().userAddress.birthdate?.toISOString() ?? "1970-01-01")
     }),
     { name: 'uaStorage', }, // nom unique pour le stockage
   )

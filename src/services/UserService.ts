@@ -1,6 +1,6 @@
 // services/userService.ts
 import api, { refreshToken } from './api';
-import { IUpdateProfile, RoleType } from '../interfaces/IUser';
+import { IUpdateProfile, IUpdateProfilePayload, RoleType } from '../interfaces/IUser';
 import { useEffect } from 'react';
 import { useAuthStore } from "../stores/useAuthStore";
 import { decodeToken } from "../interfaces/IJwtPayload";
@@ -159,9 +159,9 @@ export default class UserService {
   // : Promise<UserAddressInterface>      // typage retour de fonction (problématique)
   // TODO: voir typage retour de fonction
   //updateUserPut = async (id: number, userAddress: Omit<UserAddressInterface, 'id' | 'password' | 'avatar'>) => {
-  updateUserPut = async (id: number, userAddress: IUpdateProfile) => {
+  updateUserPut = async (id: number, userAddress: IUpdateProfilePayload) => {
     try {
-      console.log(`Dans updateUserPut id : ${id} - userAddress.address.zip_code : ${userAddress.address?.zip_code}`)
+      console.log(`[React, UserService.ts] Dans updateUserPut id : ${id} - userAddress.address.zip_code : ${userAddress.address?.zip_code}`)
       //console.log("userAddress DEBUG : ", userAddress)
       //const {password, ...filteredUserAddress} = userAddress;
       const response = await api.put(`/users/${id}`, userAddress);

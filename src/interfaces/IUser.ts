@@ -45,6 +45,31 @@ export interface IUpdateProfile {
   address?: AddressInterface;
 }
 
+export interface IUpdateProfilePayload extends Omit<IUpdateProfile, 'birthdate'> {
+  birthdate?: string;
+}
+
+
+/*
+export interface IUpdateProfilePayload {
+  id?: number;
+  first_name?: string;
+  last_name?: string;
+  birthdate?: string;
+  email?: string;
+  phone_number?: string;
+  address_id?: number;
+  address?: AddressInterface;
+}
+  */
+
+//export interface IUpdateProfileForm 
+
+
+
+
+
+
 /*
 export interface IUpdateProfile2 extends IUpdateProfile {
   id?: number;
