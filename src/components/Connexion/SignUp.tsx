@@ -4,15 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { UserSignupInterface } from "../../interfaces/IUser";
 
-// commenté suite import UserSignupInterface
-/*
-type FormValues = {
-  email: string;
-  phone_number: string;
-  password: string;
-  confirmPassword: string;
-};
-*/
 
 export default function SignUp() {
   const {

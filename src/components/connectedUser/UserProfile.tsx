@@ -18,7 +18,6 @@ const UserProfile = () => {
   const us = new UserService();
   // variables d'authentifications tirées du store
   const authUserStored = useAuthStore((state) => (state.user));
-  //const setUser = userStore((state) => state.setUser)
   const setUserAddress = userAddressStore((state) => state.setUserAddress)
   const userAddress = userAddressStore((state) => state.userAddress)
 
@@ -84,35 +83,24 @@ const UserProfile = () => {
     if (isSuccessfull) setTimeout(() => (setIsSuccessfull(false)), 5000)
   }, [isSuccessfull])
 
-
   // lors de la validation du formulaire (clic sur "enregistrer") => MAJ des données en Back (Nest et BDD)
   const onSubmit: SubmitHandler<IUpdateProfile> = async (data) => {
-    //console.log("OnSubmit userProfile avant us.updateUserPut()") //DEBUG: TODO:
-    //console.log("[onSubmit] data : ", JSON.stringify(data)) //DEBUG: TODO:
 
     // Suppression des espaces vides (trim) avant envoi des données vers le Back
-
-
     const dataTrimmed = Object.fromEntries(
       Object.entries(data).map(
         ([key, value]) => ([key, typeof value === "string" ? value.trim() : value])
       )
     )
-
     const dataTrimmed2 = Object.fromEntries( // idem pour objet "Address", nesté.
       Object.entries(dataTrimmed.address).map(
         ([key, value]) => ([key, typeof value === "string" ? value.trim() : value])
       )
     )
-
     const dataTrimmed3 = { ...dataTrimmed, ...dataTrimmed2 }; // on recréé l'ensemble (fusion)
-
-    //console.log(`dataTrimmed : ${JSON.stringify(dataTrimmed3)}`) //DEBUG: TODO:
     // vers requête Axios
     const newData = await us.updateUserPut(userAddress.id ?? 0, dataTrimmed3)
     if (newData) {
-      //setUserAddress(newData.uptadedData); // MAJ du store 
-      //console.log("newData.updatedData : ", newData.updatedData); //DEBUG: TODO:
       if (newData.status && newData.status === 200) setIsSuccessfull(true);
     }
   }
