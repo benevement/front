@@ -24,6 +24,7 @@ import GestionRoles from '../components/admin/GestionRoles';
 import Homepage from '../pages/Homepage';
 import NotificationMsTest from '../pages/NotificationMsTest';
 import VolunteerTaskLayout from '../layouts/VolunteerTaskLayout';
+import Deconnect from '../components/connectedUser/Deconnect';
 
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
   const eventMembersRoles: roleType[] = ["volunteer", "admin"]
@@ -38,8 +39,8 @@ export const routesConfig = [
   { path: "/signup", element: <SignUp />, allowVisitor: true },
   { path: "/formtest", element: <FormTest />, allowVisitor: true }, // pour tests - temporaire.
   { path: "/formtest2", element: <NotificationMsTest />, allowVisitor: true }, // pour tests - temporaire.
-  //{ path: "/voltask/:url_event_id/tasks", element: <VolunteerTask />, allowVisitor: true }, // pour tests - temporaire.
-  { path : "/voltask", element: <VolunteerTaskLayout />, allowVisitor: true }, // TODO: allowVisitor true A changer (tests)
+  { path: "/deconnect", element: <Deconnect message='🙅‍♂️ Deconnect Component' onCancel={() => alert("oncancel")} onConfirm={() => alert("onConfirm")}/>, allowVisitor: true }, // pour tests - temporaire.
+  
   //{ path: "/voltask", element: <VolunteerTask2 />, allowVisitor: true }, // pour tests - temporaire.
   { path: "/auth/google", allowVisitor: true }, // lien pour l'authentification Google OAuth2
 
@@ -51,7 +52,8 @@ export const routesConfig = [
   { path: "/users/profile", element: <UserProfile />, allowedRoles: allRoles  }, // rev 07/09 mda
   { path: "/users/avail", element: <Availabilities />, allowedRoles: eventMembersRoles  },
   { path: "/users/skills", element: <UserSkills />, allowedRoles: eventMembersRoles  },
-  { path: "/events/:url_event_id/tasks", element: <VolunteerTask />, allowedRoles: eventMembersRoles },
+  { path: "/events/:url_event_id/tasks", element: <VolunteerTaskLayout />, allowedRoles: eventMembersRoles },
+  
   
   // Pages réservées aux rôles supérieurs
 /*   { path: "/dashboard", element: <Dashboard />, allowedRoles: ["connected_user", "manager", "admin"] },

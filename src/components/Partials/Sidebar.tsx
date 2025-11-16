@@ -2,6 +2,8 @@ import clsx from "clsx";
 import { roleType } from '../../interfaces/IUser';
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
+import { useEffect, useState } from "react";
+import Deconnect from "../connectedUser/Deconnect";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -9,14 +11,21 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  // onClose  et isOpen proviennent de App.tsx : <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
+  // handleCloseSidebar : fonction de toggle true/false pour isSideBarOpen, qui est un booléen.
 
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
   const eventMembersRoles: roleType[] = ["volunteer", "admin"];
   const volunteerRole: roleType[] = ["volunteer"]
   const adminRole: roleType[] = ["admin"];
-  const { user } = useAuthStore() || {};
+  const { user, logout } = useAuthStore() || {};
   const userRole: roleType | "visitor" = user?.role || "visitor";
 
+  // Gestion fenêtre modale de déconnexion
+  const [showDialog, setShowDialog] = useState(false);
+  const handleLogout = (e: React.MouseEvent) => { e.preventDefault(); console.log("T1"); setShowDialog(true); };
+  const handleConfirm = () => { logout(); setShowDialog(false); onClose() };
+  const handleCancel = () => { setShowDialog(false); };
 
   return (
     <>
@@ -74,7 +83,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </Link>
               </li>
             )}
+
+            {/* Déconnexion utilisateur */}
+            {userRole != "visitor" &&
+              <li>
+                <Link to="" onClick={handleLogout} className="block p-2 rounded hover:bg-blue-100">
+                  Déconnexion
+                </Link>
+              </li>
+            }
+
           </ul>
+          {showDialog && (
+            <Deconnect message="Êtes-vous sûr de vouloir vous déconnecter ?" onConfirm={handleConfirm} onCancel={handleCancel} />
+          )}
 
           {/* Liens toujours visibles en bas */}
           <div className="space-y-2 mt-auto">

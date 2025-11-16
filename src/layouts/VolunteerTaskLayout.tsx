@@ -9,6 +9,7 @@ import VolunteerTask from "../components/volunteer/VolunteerTask";
 Layout composée de 2 parties : Event_ et Tasks
 Pour la partie Tasks : composant <VolunteerTask> parent de <VolunteerTaskLine>
 
+{ path: "/events/:url_event_id/tasks", element: <VolunteerTaskLayout />, allowedRoles: eventMembersRoles },
 */
 
 const DefaultLayout = () => {
