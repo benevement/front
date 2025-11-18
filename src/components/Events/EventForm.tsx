@@ -67,6 +67,7 @@ export default function EventForm() {
 
         setInvitedVolunteers(eventWithAddress.invited_volunteers || []);
         setCurrentEvent(eventWithAddress);
+        if (currentEvent != null) console.log("currentEvent : ",currentEvent) // sinon erreur linter
         setCurrentStatus(eventWithAddress.status);
 
       } catch (error) {

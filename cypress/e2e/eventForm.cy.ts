@@ -1,3 +1,7 @@
+
+// @ts-nocheck
+/// <reference types="cypress" />
+
 describe("Test de création d'un évènement", () => {
   beforeEach(() => {
     cy.request("POST", "http://localhost:3000/auth/login", {

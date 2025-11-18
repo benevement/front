@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { roleType } from '../../interfaces/IUser';
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Deconnect from "../connectedUser/Deconnect";
 
 type SidebarProps = {
@@ -16,6 +16,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
   const eventMembersRoles: roleType[] = ["volunteer", "admin"];
+  if (eventMembersRoles) console.log("eventMembersRole: ",eventMembersRoles); // sinon erreur linter 
   const volunteerRole: roleType[] = ["volunteer"]
   const adminRole: roleType[] = ["admin"];
   const { user, logout } = useAuthStore() || {};

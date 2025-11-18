@@ -1,7 +1,7 @@
 // revision : 05/09
 
 import { create } from "zustand/react";
-import { IUpdateProfile, IUpdateProfilePayload, UserStorageType } from "../interfaces/IUser";
+import { IUpdateProfile, UserStorageType } from "../interfaces/IUser";
 import { persist } from "zustand/middleware";
 import { agecalc } from "../services/UserService";
 

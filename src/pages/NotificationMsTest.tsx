@@ -5,17 +5,18 @@ import NotificationService from "../services/NotificationService";
 import { IUser } from "../interfaces/IUser";
 import UserService from "../services/UserService";
 
-
+/*
 interface IPropsNotif {
     notiftype: string;
 }
+*/
 
 const NotificationMsTest = () => { 
 
     const styleStr = "text-white bg-cyan-600 border-2 p-2 m-2 rounded-xl text-center hover:bg-cyan-500 cursor-pointer h-fit "
     const [notifTypeList, setNotifTypeList] = useState<INotification_type[]>();
     const [userList, setUserList] = useState<IUser[]>();
-    const [limit, setLimit] = useState<number>(3);
+    //const [limit, setLimit] = useState<number>(3);
     const [lastNotif, setLastNotif] = useState<INotification_type>();
     const us = new UserService();
 
@@ -119,7 +120,7 @@ const NotificationMsTest = () => {
             </div>
             <NotificationTypeAdm toParent={handleInParent} />
             {notifTypeList && notifTypeList.length > 0 && notifTypeList.map((item, index) => {
-                console.log(item);
+                console.log(item, index);
                 <p>{item.id} : {item.type}</p>
             })}
         </>

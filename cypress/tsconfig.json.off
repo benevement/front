@@ -1,0 +1,14 @@
+
+{
+    "compilerOptions": {
+    "outDir": "dist_cy",
+      "target": "es6",
+      "lib": ["es6", "dom"],
+      "sourceMap": true,
+      "types": ["cypress", "node"]
+    },
+    "include": ["**/*.ts"]
+  }
+  
+  // tsconfig.json dans répertoire cypress : recommandé par cypress pour éviter les erreurs TypeScript
+

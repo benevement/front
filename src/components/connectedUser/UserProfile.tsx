@@ -122,7 +122,7 @@ const UserProfile = () => {
 
         if (contentLength) { // autrement dit, si on a pu récupérer l'image
           const size = parseInt(contentLength, 10);
-          //console.log(`Taille de l'image : ${size} octets`);
+          console.log(`Taille de l'image : ${size} octets`);
         } else {
           photo = "/images/UserProfile/colomb-82.png";
         }

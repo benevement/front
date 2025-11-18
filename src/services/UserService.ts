@@ -1,6 +1,6 @@
 // services/userService.ts
 import api, { refreshToken } from './api';
-import { IUpdateProfile, IUpdateProfilePayload, RoleType } from '../interfaces/IUser';
+import { IUpdateProfilePayload, RoleType } from '../interfaces/IUser';
 import { useEffect } from 'react';
 import { useAuthStore } from "../stores/useAuthStore";
 import { decodeToken } from "../interfaces/IJwtPayload";

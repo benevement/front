@@ -1,12 +1,7 @@
 #!/bin/bash
 # Dockerfile pour le Front (React)
 # image de base : node
-FROM node:25-slim AS builder_f
-
-# install Midnight Commander + vim 
-RUN apt-get update && apt-get install -y --no-install-recommends xz-utils man-db mc mcedit vim apt-utils
-# nettoyage apt
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+FROM node:25-slim AS builder
 
 # mcedit en default editor + Appearance skin : Gotar
 RUN mkdir /root/.config; mkdir /root/.config/mc
@@ -24,7 +19,18 @@ RUN npm i --omit=dev
 COPY . .
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+# ETAPE FINALE
+FROM node:25-slim
+# install Midnight Commander + vim 
+RUN apt-get update && apt-get install -y --no-install-recommends xz-utils man-db mc mcedit vim apt-utils
+# nettoyage apt
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /app .
+# copie le /app du stage builder vers le workdir (/app) du stage final
+
+#CMD ["node", "dist/main.js"]
 EXPOSE 5173
 # check si le serveur répond
 HEALTHCHECK --interval=45s --timeout=55s CMD curl -f http://localhost:5173 || exit 1

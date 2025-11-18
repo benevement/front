@@ -3,7 +3,7 @@ import { IUser } from "../interfaces/IUser";
 import { decodeToken } from "../interfaces/IJwtPayload";
 //import { RoleType } from "../../../back/generated/prisma/index";
 import { roleType } from '../interfaces/IUser';
-import { useLocation } from "react-router-dom";
+
 
 type AuthState = {
   user: IUser | null;

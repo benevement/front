@@ -1,9 +1,9 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import api from "../services/api";
 import { useEffect, useState } from "react";
-import UserInterface, { IUser, UserInterfaceBdd } from "../interfaces/IUser";
+import UserInterface, { UserInterfaceBdd } from "../interfaces/IUser";
 import fakeUsers from "../data/fakeUsers";
-import { userStore } from "../stores/userStore";
+//import { userStore } from "../stores/userStore";
 
 interface Idata {
   username: string;
@@ -25,55 +25,39 @@ function FormTest() {
   }
 
   const onSubmit: SubmitHandler<Idata> = async (data) => {
-
     await sleep(1000);
     if (data.username === "bill") {
       alert(JSON.stringify(data));
     } else {
       console.log
-      alert("Formulaire envoyé, mec.");
-
+      alert("Formulaire envoyé.");
     }
   };
 
   type axiosDataType = { message: string, fakusers: UserInterfaceBdd[] } | undefined
-  const [axiosData, setAxiosData] = useState<axiosDataType>();
-  //const axiosDataArr: Omit<axiosDataType, "message"> =  axiosData ? Object.entries(axiosData.fakusers) : [];
+  const [axiosData, setAxiosData] = useState<axiosDataType>(); // TODO: à revoir
   const axiosDataArr: UserInterfaceBdd[] = axiosData?.fakusers ?? [];
-  //console.log("**fakeusers : ", Array.from(axiosDataArr));
 
-
-  // utilisation du Store (userStore)
-  const { user, connection_date, setUser, getAge } = userStore();
-
-const [fakeUserList, setFakeUserList] = useState<UserInterface[]|null>(null)
+  const [fakeUserList, setFakeUserList] = useState<UserInterface[] | null>(null)
   const handleList = async () => {
     console.log("handle List");
-    // avec ancien Front/Back :
-    /*
+    
     try {
       const res = await api.get('/users');
       console.log("res.data *1* :", res.data);
-      const { message, fakusers } = res.data;
-      res && setAxiosData(fakusers[0]); // => 1er enregistrement dans le UseState
-      console.log("message : ", message)
-      console.log("res.data.fakusers[1] : ", res.data.fakusers[1]);
-      setUser(res.data.fakusers[1]); // => store
-      console.log("enregistrement de l'utilisateur dans le Store.");
+      const { fakusers } = res.data;
+      res && setAxiosData({message : "Hello",fakusers: fakusers}); // => 1er enregistrement dans le UseState
     }
     catch (err) {
       console.error("erreur get axios : ", err);
     }
-      */
-     const list = fakeUsers.map((u) => u);
-     setFakeUserList(list);
+      
+    const list = fakeUsers.map((u) => u);
+    setFakeUserList(list);
 
   }
 
-
-
   const messageSubmit = isSubmitting ? "Transfert en cours..." : "";
-
   const [bddUser, setBddUser] = useState<UserInterfaceBdd>();
   const [pass1, setPass1] = useState<string>("");
   const [pass2, setPass2] = useState<string>("");
@@ -84,7 +68,6 @@ const [fakeUserList, setFakeUserList] = useState<UserInterface[]|null>(null)
   }, [bddUser, idChosen])
 
   async function handleClick1(): Promise<Boolean> {
-
     try {
       // recup 1 user à partir de la BDD
       setBddUser(undefined) // reset du bddUser (useState) si déjà défini
@@ -125,8 +108,8 @@ const [fakeUserList, setFakeUserList] = useState<UserInterface[]|null>(null)
         <button className="custom-button p-3 h-1/2" onClick={handleList}>Listing users</button>
       </div>
       <ul>
-       {fakeUserList?.map((item) => `${item.email} - ${item.first_name} ${item.last_name}`)}
-       </ul>
+        {fakeUserList?.map((item) => `${item.email} - ${item.first_name} ${item.last_name}`)}
+      </ul>
       {axiosData?.message}
 
       {/* {axiosData && axiosData.fakusers.forEach((item) => (`<p>${item}</p>`))} */}
@@ -167,7 +150,7 @@ const [fakeUserList, setFakeUserList] = useState<UserInterface[]|null>(null)
       <h2>{axiosData && axiosData.message}</h2>
 
       {axiosDataArr.map(user => (
-        <p key={user.id}>{user.email} - {user.birthdate} - {user.role} - {user.first_name} {user.last_name} - {user.updatedAt?.toLocaleString()}</p>
+        <p key={user.id}>{user.email} - {user.birthdate?.toISOString()} - {user.role} - {user.first_name} {user.last_name} - {user.updatedAt?.toLocaleString()}</p>
       ))}
     </>
 

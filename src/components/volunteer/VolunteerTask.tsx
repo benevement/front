@@ -1,10 +1,7 @@
 // react Component template - M.Daniel
 
-interface TaskProps {
-    //id: number;
-}
 
-const VolunteerTask = (arg: TaskProps) => {
+const VolunteerTask = () => {
 
     return (
         <>
