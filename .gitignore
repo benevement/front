@@ -28,3 +28,4 @@ test/
 .gitignore
 *.zip
 .eslintignore
+package-lock.json
