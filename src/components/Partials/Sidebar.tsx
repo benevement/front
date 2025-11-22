@@ -13,10 +13,10 @@ type SidebarProps = {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   // onClose  et isOpen proviennent de App.tsx : <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
   // handleCloseSidebar : fonction de toggle true/false pour isSideBarOpen, qui est un booléen.
-
   const allRoles: roleType[] = ["connected_user", "volunteer", "admin"];
   const eventMembersRoles: roleType[] = ["volunteer", "admin"];
-  if (eventMembersRoles) console.log("eventMembersRole: ",eventMembersRoles); // sinon erreur linter 
+  let flag1 = false;
+  if (eventMembersRoles && flag1) console.log("eventMembersRole: ",eventMembersRoles); // sinon erreur linter 
   const volunteerRole: roleType[] = ["volunteer"]
   const adminRole: roleType[] = ["admin"];
   const { user, logout } = useAuthStore() || {};
