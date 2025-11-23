@@ -1,0 +1,20 @@
+stages:
+  - deploy
+  - qualitycode
+  - testing
+
+build-prod: # job
+  image: docker:stable
+  stage: deploy
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$TAG_PROD .
+    - docker push $CI_REGISTRY_IMAGE:$TAG_PROD
+  rules:
+    - when: manual
+  # docker login
+  # docker build
+  # docker push
