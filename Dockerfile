@@ -13,7 +13,8 @@ WORKDIR /app
 
 COPY package*.json .
 # install des dépendances de prod
-RUN npm i --omit=dev
+#RUN npm i --omit=dev
+RUN npm ci
 
 COPY . .
 RUN npm run build
