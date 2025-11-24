@@ -44,11 +44,11 @@ export default function EventForm() {
 
 
   useEffect(() => {
-    //axios.get("http://localhost:3000/users").then((res) => {
+    axios.get("http://localhost:3000/users").then((res) => {
     // passage à docker :
      //axios.get("http://benevback:3000/users").then((res) => {
      // passage à docker sur EC2/AWS (chemins relatifs sinon err contenu mixte):
-      axios.get("/apiaws/users").then((res) => {
+      //axios.get("/apiaws/users").then((res) => {
       setVolunteers(res.data);
     });
   }, []);
