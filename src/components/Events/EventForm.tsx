@@ -44,7 +44,9 @@ export default function EventForm() {
 
 
   useEffect(() => {
-    axios.get("http://localhost:3000/users").then((res) => {
+    //axios.get("http://localhost:3000/users").then((res) => {
+    // passage à docker :
+      axios.get("http://benevback:3000/users").then((res) => {
       setVolunteers(res.data);
     });
   }, []);

@@ -3,8 +3,9 @@ import { useAuthStore } from "../stores/useAuthStore";
 import { updateStoreWithToken } from "./UserService";
 
 const api = axios.create({
-
-  baseURL: 'http://localhost:3000',
+  //baseURL: 'http://localhost:3000',
+  // passage à docker :
+  baseURL: 'http://benevback:3000',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
