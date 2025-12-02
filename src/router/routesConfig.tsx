@@ -11,7 +11,6 @@ import EventForm from "../components/Events/EventForm";
 import EventDetails from "../components/Events/EventsDetails";
 import EventsList from '../components/Events/EventsList';
 import UserProfile from "../components/connectedUser/UserProfile";
-//import VolunteerTask from "../components/volunteer/VolunteerTask"
 import FormTest from "../pages/FormTest";
 import Availabilities from "../components/volunteer/Availabilities";
 import UserSkills from "../components/volunteer/UserSkills";
