@@ -1,0 +1,189 @@
+// ----------------------De UserProvider.tsx :
+
+   // à adapter pour récupérer l'objet "user" connecté :
+    
+    const login = async (data: { email: string; password: string }) => {
+      try {
+        const response = await axios.post("https://fake_api_endpoint/sign_in", data);
+
+        const receivedData = response.data;
+        console.log("Received data : ", receivedData);
+      } catch (error) {
+        console.log("catch error UserProvider : ", error);
+      }
+    };
+    
+// ---------------------------------
+
+
+// react-hook-form test liste de sélection
+
+<select {...register("role", {required: true})}>
+{/* export type roleType =  "admin" | "volunteer" | "connected_user" | "visitor";  */}
+{/* <option value={""}>Select...</option> */}
+<option value={"admin"}>admin</option>
+<option value={"volunteer"}>volunteer</option>
+<option value={"connected_user"}>connected_user</option>
+<option value={"visitor"}>visitor</option>
+</select>
+
+// ---------------------------------------
+
+// section de UserProfile_vol avant le 14/08
+
+<button type="submit" className="custom-button paddingButton2 col-start-2 col-end-3 bg-cyan-600">
+Compétences
+</button>
+
+// --------------------------------------------
+
+//Section de userProfile pour test au 16/08/25
+
+const [recupTitle, setRecupTitle] = useState<string>("");
+/* getting posts of user with id 5 */
+fetch('https://dummyjson.com/users/5/posts')
+
+.then( (res) =>  res.json())
+.then ( (data) => {
+  const jres = data.posts[0].title
+  setRecupTitle(jres)
+}
+//console.log(jres)
+);
+useEffect(() => {
+  console.log("recupTitle à jour :", recupTitle);
+},[recupTitle]);
+
+//--------------------------------
+
+"vite": "^7.0.4"
+
+plugins: [react(), tailwindcss()],
+
+// ---------------------------------------------
+
+// homePage modifiée, 18/08
+
+import { Link } from "react-router-dom"
+
+
+const Homepage = () => {
+  return (
+    <>
+      <div className="text-amber-700">
+      <h1>Homepage</h1>
+      </div>
+      <div>
+        <h2>Quelques liens en dur pour le moment :</h2>
+      </div>
+      <ul className="list-disc m-3 pl-3">
+        <li>
+          <Link to="/users/89">Ecran "Profil utilisateur"</Link>
+        </li>
+        <li>
+          <Link to="/events/1/tasks">Ecran "Tasks" pour un bénévole</Link>
+        </li>
+      </ul>
+    </>
+  )
+}
+
+export default Homepage
+
+// ---------------------------------------------
+
+// from VolunteerTask.tsx, 19/08
+const event: IEvents | 'undefined' = fakeEvents.find((e) => (e.id === Number(url_event_id))) ?? 'undefined'
+
+//---------------------- 08/09/25 - 14h11
+
+  /*
+    const [userStorage, setUserStorage] = useState<UserStorageType>({
+      id: 0, email: "", last_name: "", first_name: "", birthdate: "", role: "visitor"
+    });
+  */
+
+
+//--------------------------
+//const [user, setUser] = useState<IUser>();  // hook interdit en dehors d'un composant
+
+
+// 15/09/25
+
+// <button command="show-modal" commandfor="dialog" class="rounded-md bg-gray-950/5 px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-950/10">Open dialog</button>
+
+const html1 = `
+<el-dialog>
+  <dialog id="dialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+    <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+
+    <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+      <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 text-red-600">
+                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 id="dialog-title" class="text-base font-semibold text-gray-900">Deactivate account</h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">Are you sure you want to deactivate your account? All of your data will be permanently removed. This action cannot be undone.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <button type="button" command="close" commandfor="dialog" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto">Deactivate</button>
+          <button type="button" command="close" commandfor="dialog" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+        </div>
+      </el-dialog-panel>
+    </div>
+  </dialog>
+</el-dialog>`
+
+const html2 = `<div><h1>Hello !</h1></div>`;
+const html3 = `
+
+<!-- Modal toggle -->
+<button data-modal-target="default-modal" data-modal-toggle="default-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+  Toggle modal
+</button>
+
+<!-- Main modal -->
+<div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Terms of Service
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                    With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
+                </p>
+                <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                    The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
+                </p>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="default-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                <button data-modal-hide="default-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
+`
+===============
