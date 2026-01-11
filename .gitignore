@@ -31,3 +31,4 @@ test/
 #package-lock.json
 Dockerfile
 docker-compose.yml
+.gitlab*
